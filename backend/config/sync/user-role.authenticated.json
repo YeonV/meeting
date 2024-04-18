@@ -1,0 +1,37 @@
+{
+  "name": "Authenticated",
+  "description": "Default role given to authenticated user.",
+  "type": "authenticated",
+  "permissions": [
+    {
+      "action": "api::meeting.meeting.create"
+    },
+    {
+      "action": "api::meeting.meeting.delete"
+    },
+    {
+      "action": "api::meeting.meeting.find"
+    },
+    {
+      "action": "api::meeting.meeting.findOne"
+    },
+    {
+      "action": "api::meeting.meeting.update"
+    },
+    {
+      "action": "plugin::users-permissions.auth.changePassword"
+    },
+    {
+      "action": "plugin::users-permissions.role.find"
+    },
+    {
+      "action": "plugin::users-permissions.role.findOne"
+    },
+    {
+      "action": "plugin::users-permissions.user.findOne"
+    },
+    {
+      "action": "plugin::users-permissions.user.me"
+    }
+  ]
+}

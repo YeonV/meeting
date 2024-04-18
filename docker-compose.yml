@@ -1,0 +1,114 @@
+version: '3'
+services:
+
+  next:
+    image: next
+    build:
+      context: ./frontend
+      args:
+        NEXT_PORT: ${NEXT_PORT}
+    container_name: next
+    restart: always
+    volumes:
+      - ./frontend:/usr/src/app
+      - /app/node_modules
+      - /app/.next
+    env_file: .env
+    environment:
+      VIRTUAL_HOST: ${SUB_DOMAIN}.${BASE_DOMAIN}
+      VIRTUAL_PORT: ${NEXT_PORT}
+      LETSENCRYPT_HOST: ${SUB_DOMAIN}.${BASE_DOMAIN}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+    ports:
+      - "${NEXT_PORT}:${NEXT_PORT}"
+    depends_on:
+      - strapiDB
+
+  nextdev:
+    image: nextdev
+    build:
+      context: ./frontend
+      dockerfile: dev.Dockerfile
+      args:
+        NEXT_DEV_PORT: ${NEXT_DEV_PORT}
+        NEXT_PUBLIC_STAGE: dev
+    container_name: nextdev
+    restart: always
+    volumes:
+      - ./frontend:/usr/src/app
+      - /app/node_modules
+      - ./frontend/.nextdev:/app/.nextdev
+    env_file: .env
+    environment:
+      VIRTUAL_HOST: ${SUB_DOMAIN}-dev.${BASE_DOMAIN}
+      VIRTUAL_PORT: ${NEXT_DEV_PORT}
+      LETSENCRYPT_HOST: ${SUB_DOMAIN}-dev.${BASE_DOMAIN}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      NEXT_PUBLIC_STAGE: dev
+    ports:
+      - "${NEXT_DEV_PORT}:${NEXT_DEV_PORT}"
+    depends_on:
+      - strapiDB
+
+ 
+  strapi:
+    container_name: strapi
+    image: blade86/strapi-v4:latest-amd64
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_CLIENT: ${DATABASE_CLIENT}
+      DATABASE_HOST: strapiDB
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PORT: ${DATABASE_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+      VIRTUAL_HOST: ${STRAPI_SUB_DOMAIN}.${BASE_DOMAIN}
+      VIRTUAL_PORT: ${STRAPI_PORT}
+      LETSENCRYPT_HOST: ${STRAPI_SUB_DOMAIN}.${BASE_DOMAIN}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+    volumes:
+      - ./.env:/opt/app/.env
+      - ./backend/public/uploads:/opt/app/public/uploads
+      - ./backend/config/sync:/opt/app/config/sync
+      - ./backend/tsconfig.json:/opt/app/tsconfig.json
+    ports:
+      - '${STRAPI_PORT}:${STRAPI_PORT}'
+    depends_on:
+      - strapiDB
+
+  strapiDB:
+    container_name: strapiDB
+    platform: linux/amd64
+    restart: unless-stopped
+    env_file: .env
+    image: postgres:14.5-alpine
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+      PGPORT: ${DATABASE_PORT}
+    volumes:
+      - ./backend/data:/var/lib/postgresql/data/
+
+    ports:
+      - '${DATABASE_PORT}:${DATABASE_PORT}'
+
+  strapiAdminer:
+    container_name: strapiAdminer
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - '${STRAPI_ADMIN_PORT}:8080'
+    environment:
+      - ADMINER_DEFAULT_SERVER=strapiDB
+    depends_on:
+      - strapiDB
+
+networks:
+  default:
+    external: true
+    name: ${DOCKER_NETWORK}

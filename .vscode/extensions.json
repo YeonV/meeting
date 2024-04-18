@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "ms-azuretools.vscode-docker",
+        "dsznajder.es7-react-js-snippets",
+        "dbaeumer.vscode-eslint",
+        "github.vscode-pull-request-github",
+        "ms-vscode.vscode-typescript-next",
+        "pkief.material-icon-theme",
+        "esbenp.prettier-vscode",
+        "rvest.vs-code-prettier-eslint"
+    ]
+}
