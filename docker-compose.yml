@@ -5,6 +5,7 @@ services:
     image: next
     build:
       context: ./frontend
+      dockerfile: Dockerfile
       args:
         NEXT_PORT: ${NEXT_PORT}
     container_name: next
@@ -15,6 +16,7 @@ services:
       - /app/.next
     env_file: .env
     environment:
+      NODE_ENV: production
       VIRTUAL_HOST: ${SUB_DOMAIN}.${BASE_DOMAIN}
       VIRTUAL_PORT: ${NEXT_PORT}
       LETSENCRYPT_HOST: ${SUB_DOMAIN}.${BASE_DOMAIN}
@@ -28,7 +30,7 @@ services:
     image: nextdev
     build:
       context: ./frontend
-      dockerfile: dev.Dockerfile
+      dockerfile: Dockerfile.dev
       args:
         NEXT_DEV_PORT: ${NEXT_DEV_PORT}
         NEXT_PUBLIC_STAGE: dev
