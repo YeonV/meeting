@@ -9,6 +9,7 @@ WORKDIR /usr/src/app
 # Install app dependencies
 COPY package*.json ./
 RUN npm install
+RUN npm install chokidar-cli
 
 # Bundle app source
 COPY . .
@@ -17,6 +18,10 @@ COPY . .
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV PORT=$NEXT_DEV_PORT
+ENV SHELL=bash
+ENV NODE_ENV=development
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING true
 
 # Expose the listening port
 EXPOSE ${NEXT_DEV_PORT}
