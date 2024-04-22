@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NEXT_PUBLIC_STAGE=dev next dev",
-    "build": "next build",
+    "build": "cross-env NODE_ENV= next build",
     "start": "next start",
     "startdocker": "node server.js",
     "lint": "next lint"

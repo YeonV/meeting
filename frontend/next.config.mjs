@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
-import { verifyPatch } from 'next-ws/server/index.js'
+// import { verifyPatch } from 'next-ws/server/index.js'
 
-verifyPatch()
+// verifyPatch()
 const headers = [
   {
     // matching all routes for GET requests
@@ -73,7 +73,7 @@ const nextConfig = {
   reactStrictMode: false,
   output: 'standalone',
   poweredByHeader: false,
-  headers: async () => headers,
+  // headers: async () => headers,
   distDir: process.env.NEXT_PUBLIC_STAGE === 'dev' ? '.nextdev' : '.next'
 }
 

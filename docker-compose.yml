@@ -12,8 +12,8 @@ services:
     restart: always
     volumes:
       - ./frontend:/usr/src/app
+      - ./frontend/.next:/app/.next
       - /app/node_modules
-      - /app/.next
     env_file: .env
     environment:
       NODE_ENV: production

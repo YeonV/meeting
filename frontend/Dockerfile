@@ -12,7 +12,7 @@ RUN npm install
 # Bundle app source
 # COPY ./.next/ .
 COPY ./ .
-RUN npx next-ws-cli@latest patch
+RUN npx next-ws-cli@latest patch --yes
 
 # Set environment variables
 ARG NEXT_PORT

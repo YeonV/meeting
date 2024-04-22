@@ -6,7 +6,6 @@ import { ThemeProvider } from './Providers/ThemeProvider'
 import { NextAuthProvider } from './Providers/SessionProvider'
 import TopBar from './components/TopBar/TopBar'
 import './globals.css'
-import { WebSocketProvider } from 'next-ws/client'
 
 const inter = Inter({ subsets: ['latin'] })
 
