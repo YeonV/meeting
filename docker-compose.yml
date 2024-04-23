@@ -10,10 +10,6 @@ services:
         NEXT_PORT: ${NEXT_PORT}
     container_name: next
     restart: always
-    volumes:
-      - ./frontend:/usr/src/app
-      - ./frontend/.next:/app/.next
-      - /app/node_modules
     env_file: .env
     environment:
       NODE_ENV: production
@@ -37,9 +33,12 @@ services:
     container_name: nextdev
     restart: always
     volumes:
-      - ./frontend:/usr/src/app
-      - /app/node_modules
-      - ./frontend/.nextdev:/app/.nextdev
+      - ./frontend/src:/usr/src/app/src
+      - ./frontend/public:/usr/src/app/public
+      - ./frontend/package.json:/usr/src/app/package.json
+      - ./frontend/package-lock.json:/usr/src/app/package-lock.json
+      - ./frontend/tsconfig.json:/usr/src/app/tsconfig.json
+      - ./frontend/.eslintrc.json:/usr/src/app/.eslintrc.json
     env_file: .env
     environment:
       VIRTUAL_HOST: ${SUB_DOMAIN}-dev.${BASE_DOMAIN}
