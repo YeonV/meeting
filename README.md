@@ -8,7 +8,7 @@ This is a mono repository containing three projects:
 
 1. **Web**: A Next.js 14 project utilizing the new app router and server actions/components.
 2. **API**: A Strapi 4.22 project that serves as the backend.
-3. **WS**: A WebSocket server on Node.js for client-server communication.
+3. **WS**: A WebSocket integration for NextJS.
 
 ### Techs
 
@@ -47,9 +47,9 @@ coming soon.
 
 ## Built With
 
-* Next.js - The web framework used
+* NextJS - The web framework used
 * Strapi - Backend API
-* Node.js - WebSocket server
+* NextWS - WebSocket Integration for NextJS
 
 ## Authors
 

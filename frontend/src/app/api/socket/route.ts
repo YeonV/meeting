@@ -14,7 +14,8 @@ export function SOCKET(client: WebSocket, request: IncomingMessage, server: WebS
       cl.on('message', (message) => {
         const m = message instanceof Buffer ? message.toString() : message
         for (const c of clients) {
-          if (c.id !== cl.id && client.id !== 'server') c.send(`${client.id}: ${m}`)
+          // if (c.id !== cl.id && client.id !== 'server')
+          c.send(`${client.id}: ${m}`)
           // if (client.id !== 'server') c.send(`${client.id}: ${m}`)
         }
       })
