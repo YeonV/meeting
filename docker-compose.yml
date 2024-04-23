@@ -1,14 +1,14 @@
 version: '3'
 services:
 
-  next:
-    image: next
+  yznextprod:
+    image: yznextprod
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
         NEXT_PORT: ${NEXT_PORT}
-    container_name: next
+    container_name: yznextprod
     restart: always
     env_file: .env
     environment:
@@ -20,17 +20,17 @@ services:
     ports:
       - "${NEXT_PORT}:${NEXT_PORT}"
     depends_on:
-      - strapiDB
+      - yzstrapiDB
 
-  nextdev:
-    image: nextdev
+  yznextdev:
+    image: yznextdev
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
       args:
         NEXT_DEV_PORT: ${NEXT_DEV_PORT}
         NEXT_PUBLIC_STAGE: dev
-    container_name: nextdev
+    container_name: yznextdev
     restart: always
     volumes:
       - ./frontend/src:/usr/src/app/src
@@ -49,17 +49,17 @@ services:
     ports:
       - "${NEXT_DEV_PORT}:${NEXT_DEV_PORT}"
     depends_on:
-      - strapiDB
+      - yzstrapiDB
 
  
-  strapi:
-    container_name: strapi
+  yzstrapiweb:
+    container_name: yzstrapiweb
     image: blade86/strapi-v4:latest-amd64
     restart: unless-stopped
     env_file: .env
     environment:
       DATABASE_CLIENT: ${DATABASE_CLIENT}
-      DATABASE_HOST: strapiDB
+      DATABASE_HOST: yzstrapiDB
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       DATABASE_PORT: ${DATABASE_PORT}
@@ -79,10 +79,10 @@ services:
     ports:
       - '${STRAPI_PORT}:${STRAPI_PORT}'
     depends_on:
-      - strapiDB
+      - yzstrapiDB
 
-  strapiDB:
-    container_name: strapiDB
+  yzstrapiDB:
+    container_name: yzstrapiDB
     platform: linux/amd64
     restart: unless-stopped
     env_file: .env
@@ -98,16 +98,16 @@ services:
     ports:
       - '${DATABASE_PORT}:${DATABASE_PORT}'
 
-  strapiAdminer:
-    container_name: strapiAdminer
+  yzstrapiAdminer:
+    container_name: yzstrapiAdminer
     image: adminer
     restart: unless-stopped
     ports:
       - '${STRAPI_ADMIN_PORT}:8080'
     environment:
-      - ADMINER_DEFAULT_SERVER=strapiDB
+      - ADMINER_DEFAULT_SERVER=yzstrapiDB
     depends_on:
-      - strapiDB
+      - yzstrapiDB
 
 networks:
   default:
