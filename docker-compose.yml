@@ -77,7 +77,7 @@ services:
       - ./backend/config/sync:/opt/app/config/sync
       - ./backend/tsconfig.json:/opt/app/tsconfig.json
     ports:
-      - '${STRAPI_PORT}:${STRAPI_PORT}'
+      - '${STRAPI_PORT}:1337'
     depends_on:
       - yzstrapiDB
 
