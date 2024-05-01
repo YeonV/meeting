@@ -7,6 +7,7 @@ import { useWebSocket } from 'next-ws/client'
 import useStore from '@/store/useStore'
 import Calendar from './Calendar/Calendar'
 import Meetings from './Meetings/Meetings'
+import Chat from './Chat'
 
 const Content = () => {
   const { data: session } = useSession()
@@ -30,6 +31,11 @@ const Content = () => {
           {currentTab === 2 && (
             <div style={{ paddingTop: '2rem' }}>
               <Meetings meetings={meetings} notify={notify} />
+            </div>
+          )}
+          {currentTab === 3 && (
+            <div style={{ paddingTop: '2rem', display: 'flex', flexGrow: 1 }}>
+              <Chat />
             </div>
           )}
         </Box>

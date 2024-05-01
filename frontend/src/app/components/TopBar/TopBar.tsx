@@ -3,7 +3,7 @@
 import { useState, MouseEvent } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { Avatar, Chip, Divider, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
-import { Brightness4, Brightness7, CalendarToday, DeveloperBoard, List, Login, Logout } from '@mui/icons-material'
+import { Brightness4, Brightness7, CalendarToday, Chat, DeveloperBoard, List, Login, Logout } from '@mui/icons-material'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -57,6 +57,7 @@ const TopBarBase = () => {
               >
                 <Tab iconPosition='start' icon={<CalendarToday />} value={1} label='Calendar' />
                 <Tab iconPosition='start' icon={<List />} value={2} label='Meetings' />
+                <Tab iconPosition='start' icon={<Chat />} value={3} label='Chat' />
               </Tabs>
             ) : (
               <>

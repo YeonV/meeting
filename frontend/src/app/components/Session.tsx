@@ -26,7 +26,7 @@ const Session = () => {
   }, [session])
 
   useEffect(() => {
-    console.log(me, session)
+    // console.log(me, session)
     if (!session) return
     if (session && session.strapiToken && me && me.role.type === 'employee') {
       fetchAllMeetings(session.strapiToken)

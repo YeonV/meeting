@@ -90,7 +90,7 @@ const storeGeneral = (set: any) => ({
   },
   fetchAllMeetings: async (strapiToken: string) => {
     const meetings = await getAllMeetings(strapiToken)
-    console.log(meetings)
+    // console.log(meetings)
     set(
       produce((state: IStore) => {
         state.meetings = meetings.map((meeting: any) => {

@@ -75,7 +75,6 @@ const handler = NextAuth({
             )
             if (!strapiResponse.ok) {
               const strapiError: StrapiErrorT = await strapiResponse.json()
-              // console.log('strapiError', strapiError);
               throw new Error(strapiError.error.message)
             }
             const strapiLoginResponse: StrapiLoginResponseT = await strapiResponse.json()
@@ -95,6 +94,16 @@ const handler = NextAuth({
           // token.role = user.role
           // token.provider = account.provider
           // token.blocked = user.blocked
+        }
+        if (account.provider === 'battlenet') {
+          console.log('battlenet account and user: ', account, user)
+          const userinfo = await fetch(`https://oauth.battle.net/oauth/userinfo`, {
+            headers: {
+              region: 'eu',
+              Authorization: `Bearer ${account.access_token}`
+            }
+          }).then((res) => res.json())
+          console.log('userinfo', userinfo)
         }
         if (account.provider === 'credentials') {
           // for credentials, not google provider

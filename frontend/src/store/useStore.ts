@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { devtools, combine, persist } from 'zustand/middleware'
 import storeUI from './storeUI'
 import storeGeneral from './storeGeneral'
+import storeChat from './storeChat'
 
 const useStore = create(
   devtools(
@@ -10,9 +11,10 @@ const useStore = create(
         {
           hackedBy: 'Blade'
         },
-        (set: any) => ({
+        (set: any, get: any) => ({
           ...storeUI(set),
-          ...storeGeneral(set)
+          ...storeGeneral(set),
+          ...storeChat(set, get)
         })
       ),
       {
