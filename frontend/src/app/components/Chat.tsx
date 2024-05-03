@@ -22,6 +22,7 @@ const Chat = () => {
   const addMessage = useStore((state) => state.addMessage)
   const addChat = useStore((state) => state.addChat)
   const addReaction = useStore((state) => state.addReaction)
+  const removeReaction = useStore((state) => state.removeReaction)
   const chat = chats.find((c) => {
     return c.id === activeChat
   })
@@ -36,6 +37,14 @@ const Chat = () => {
         const { chatId, reaction, id } = JSON.parse(event.data)
         if (reaction.author !== session?.user?.email && reaction.author !== session?.user?.name?.replace('#', '-')) {
           addReaction(chatId, id, reaction)
+        } else {
+        }
+      }
+      if (eventType === 'reactionRemove') {        
+        const { chatId, reaction, id } = JSON.parse(event.data)
+        console.log('reactionRemove:', chatId, id, reaction)
+        if (reaction.author !== session?.user?.email && reaction.author !== session?.user?.name?.replace('#', '-')) {
+          removeReaction(chatId, id, reaction)
         } else {
         }
       }
@@ -105,7 +114,7 @@ const Chat = () => {
             }}
           >
             <HeaderBar messages={messages} />
-            <History emojiOpen={emojiOpen} setReadMessages={setReadMessages} messages={chat?.messages || []} group={chat?.group} />
+            <History emojiOpen={emojiOpen} messages={chat?.messages || []} group={chat?.group} />
             <MessageBar emojiOpen={emojiOpen} setEmojiOpen={setEmojiOpen} />
           </Box>
         </Box>

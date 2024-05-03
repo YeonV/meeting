@@ -130,3 +130,13 @@ export function transformData(data: any) {
     return { ...attributes, ...rest }
   })
 }
+
+export function formatedDayDate(date: any) {
+  const diff = moment().startOf('day').diff(moment(date).startOf('day'), 'days');
+  switch(diff) {
+      case 0: return 'Heute';
+      case 1: return 'Gestern';
+      case 2: return 'Vorgestern';
+      default: return moment(date).format('D.M.YYYY');
+  }
+}

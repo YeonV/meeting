@@ -3,6 +3,7 @@ import { produce } from 'immer'
 import { IChat } from '@/types/chat/iChat'
 import { IMessage } from '@/types/chat/IMessage'
 import { v4 as uuidv4 } from 'uuid'
+import { IReaction } from '@/types/chat/IReaction'
 
 const storeChat = (set: any, get: any) => ({
   activeChat: '1',
@@ -122,7 +123,7 @@ const storeChat = (set: any, get: any) => ({
       false,
       'chat/removeMessage'
     ),
-  addReaction: (chatId: string, messageId: string, reaction: { author: string; emoji: string }): void =>
+  addReaction: (chatId: string, messageId: string, reaction: IReaction): void =>
     set(
       produce((state: IStore) => {
         state.chats = state.chats.map((c) =>
@@ -136,6 +137,21 @@ const storeChat = (set: any, get: any) => ({
       }),
       false,
       'chat/addReaction'
+    ),
+  removeReaction: (chatId: string, messageId: string, reaction: IReaction): void =>
+    set(
+      produce((state: IStore) => {
+        state.chats = state.chats.map((c) =>
+          c.id === chatId
+            ? {
+                ...c,
+                messages: c.messages.map((m) => (m.id === messageId ? { ...m, reactions: m.reactions?.filter((r) => r.author !== reaction.author || r.emoji !== reaction.emoji) } : m))
+              }
+            : c
+        )
+      }),
+      false,
+      'chat/removeReaction'
     )
 })
 

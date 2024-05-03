@@ -1,9 +1,11 @@
+import { IReaction } from './IReaction'
+
 export interface IMessage {
   id: string
   author: string
   content: string
   time?: number
-  reactions?: { author: string; emoji: string }[]
+  reactions?: IReaction[]
   recipients?: string[]
 }
 

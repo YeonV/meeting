@@ -1,0 +1,1 @@
+export interface IReaction { author: string; emoji: string }
