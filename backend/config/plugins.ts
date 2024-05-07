@@ -3,14 +3,14 @@ export default () => ({
         enabled: true,
         config: {
             importOnBootstrap: false,
-            // customTypes: [
-            //     {
-            //         uid: 'api::meeting.meeting',
-            //         configName: 'Meeting',
-            //         queryString: 'meeting'
-            //     }
+            customTypes: [
+                {
+                    uid: 'api::meeting.meeting',
+                    configName: 'Meeting',
+                    queryString: 'meeting'
+                }
             
-            // ] 
+            ] 
         }
     },
     "entity-relationship-chart": {
