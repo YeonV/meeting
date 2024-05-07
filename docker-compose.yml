@@ -75,6 +75,7 @@ services:
       - ./.env:/opt/app/.env
       - ./backend/public/uploads:/opt/app/public/uploads
       - ./backend/config/sync:/opt/app/config/sync
+      - ${PWD}/backend/config/plugin.ts:/opt/app/config/plugin.ts
       - ./backend/tsconfig.json:/opt/app/tsconfig.json
     ports:
       - '${STRAPI_PORT}:1337'
