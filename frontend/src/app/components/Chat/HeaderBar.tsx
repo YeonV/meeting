@@ -10,11 +10,12 @@ const HeaderBar = ({ messages, rounded }: { messages: { message: string; timesta
   const theme = useTheme()
   const { data: session } = useSession()
   const chats = useStore((state) => state.chats)
+  const displayName = useStore((state) => state.displayName)
   const activeChat = useStore((state) => state.activeChat)
   const chat = chats.find((c) => c.id === activeChat)
   const otherUser = chat?.name
     .split(',')
-    .filter((m) => m !== 'General' && m !== session?.user.email && m !== session?.user.name?.replace('#', '-'))
+    .filter((m) => m !== 'General' && m !== displayName)
     .join(',')
   const timeFromNow = moment(messages[0]?.timestamp).fromNow()
   const formattedDate = moment(messages[0]?.timestamp).format('DD.MM.YYYY, hh:mm')

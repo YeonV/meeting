@@ -20,6 +20,7 @@
     "@mui/material": "^5.15.15",
     "@mui/material-nextjs": "^5.15.11",
     "cross-env": "^7.0.3",
+    "crypto-js": "^4.2.0",
     "emoji-picker-react": "^4.9.2",
     "http-proxy-middleware": "^3.0.0",
     "ics": "^3.7.2",
@@ -42,6 +43,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^20",
     "@types/qs": "^6.9.14",
     "@types/react": "^18",

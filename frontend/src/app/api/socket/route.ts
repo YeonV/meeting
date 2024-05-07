@@ -1,55 +1,73 @@
 import { WebSocket, WebSocketServer } from 'ws'
 import { IncomingMessage } from 'http'
+import { decrypt } from '@/app/actions'
 
-export function SOCKET(client: WebSocket, request: IncomingMessage, server: WebSocketServer) {
+export async function SOCKET(
+  client: WebSocket,
+  request: IncomingMessage,
+  server: WebSocketServer
+) {
   const query = new URLSearchParams(request.url!.split('?')[1])
   const webSocket = (global as any)?.['wsServer'] as WebSocketServer
-  const clients: Array<WebSocket> = Array.from((webSocket?.clients || {}) as Set<WebSocket>)
+  const clients: Array<WebSocket> = Array.from(
+    (webSocket?.clients || {}) as Set<WebSocket>
+  )
+  // console.log('clients:', clients)
+  client['id'] = decodeURIComponent(query.get('userId') || 'Unknown')
 
-  client['id'] = query.get('userId') ?? 'Unknown'
+  if (client['id'] === 'Unknown') {
+    client.send(
+      JSON.stringify({
+        author: 'INTERNAL_SYSTEM_MESSAGE',
+        content: 'You are not authorized to connect to this server',
+      })
+    )
+    client.close()
+    return
+  }
+  // console.log('client:', client['id'])
+  const userStr = client['id'] === 'server' ? client['id'] : await decrypt(client['id'])
+  // console.log('userStr:', userStr)
+  const user = client['id'] === 'server'
+      ? {
+          displayName: 'server',
+          email: 'server',
+          id: 'server',
+          name: 'server',
+        }
+      : JSON.parse(userStr)
+  // console.log('user:', user)
 
-  // if (clients.length > 1) {
-  //   for (const cl of clients) {
-  //     // console.log('clients:', cl)
-  //     cl.on('message', (message) => {
-  //       const m = message instanceof Buffer ? message.toString() : message
-  //       for (const c of clients) {
-  //         // if (c.id !== cl.id && client.id !== 'server')
-  //         c.send(`${client.id}: ${m}`)
-  //         // if (client.id !== 'server') c.send(`${client.id}: ${m}`)
-  //       }
-  //     })
-  //   }
+
+  console.log('User connected:', user);
+  (client as any).displayName = user.displayName
+
+  const existingNames = Array.from(server.clients).map((c: any) => c.displayName);
+  console.log('existing Users:', existingNames)
+  // if (existingNames.includes(user.displayName)) {
+  //   client.send(JSON.stringify({
+  //     type: 'error',
+  //     content: 'Display name already in use. Please choose another one.',
+  //   }))
+  //   client.close()
+  //   return
   // }
+  // else displayName verified
+  
 
   client.on('message', (payload) => {
-    // Send messages to all connected clients, except the sender
-    server.clients.forEach((receiver) => {
-      // if (receiver === client) return
-      const m = payload instanceof Buffer ? payload.toString() : payload
-      // const msg = JSON.stringify({
-      //   author: client.id,
-      //   content: m
-      // })
-      const msg = JSON.parse(m as any)
-      if (msg.author !== 'INTERNAL_SYSTEM_MESSAGE') {
-        msg.author = client.id
-      }
-      receiver.send(JSON.stringify(msg))
+
+    const m = payload instanceof Buffer ? payload.toString() : payload
+    const msg = JSON.parse(m as any)
+
+    if (msg.author !== 'INTERNAL_SYSTEM_MESSAGE') {
+      msg.author = user.displayName
+    }
+    console.log('payload:', msg)
+    server.clients.forEach((currentClient) => {
+      console.log('currentClient:', (currentClient as any).displayName)
+      currentClient.send(JSON.stringify(msg))
     })
   })
   ;(global as any)['wsServer'] = server
 }
-
-// // Send messages to all connected clients, except the sender
-// console.log('payload:', payload)
-// server.clients.forEach((receiver) => {
-//   // if (receiver === client) return
-//   console.log('receiver:', receiver)
-//   const m = payload instanceof Buffer || payload instanceof ArrayBuffer || typeof payload !== 'string' ? payload.toString() : payload
-//   console.log(m)
-//   const ms = JSON.parse(m)
-//   ms.author = client['id']
-//   console.log('message:', ms)
-//   receiver.send(ms)
-// })

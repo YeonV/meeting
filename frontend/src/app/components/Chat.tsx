@@ -9,13 +9,12 @@ import MessageBar from './Chat/MessageBar'
 import HeaderBar from './Chat/HeaderBar'
 import History from './Chat/History'
 import Userlist from './Chat/Userlist'
-import { v4 as uuidv4 } from 'uuid'
 import { IWsMessage } from '@/types/chat/IMessage'
 
 const Chat = () => {
   const { data: session } = useSession()
   const [messages, setMessages] = useState<{ message: string; timestamp: number }[]>([])
-  const [readMessages, setReadMessages] = useState<{ message: string; timestamp: number }[]>([])
+  // const [readMessages, setReadMessages] = useState<{ message: string; timestamp: number }[]>([])
   const [emojiOpen, setEmojiOpen] = useState(false)
   const chats = useStore((state) => state.chats)
   const activeChat = useStore((state) => state.activeChat)
@@ -23,6 +22,8 @@ const Chat = () => {
   const addChat = useStore((state) => state.addChat)
   const addReaction = useStore((state) => state.addReaction)
   const removeReaction = useStore((state) => state.removeReaction)
+  const displayName = useStore((state) => state.displayName)
+  const setDisplayName = useStore((state) => state.setDisplayName)
   const chat = chats.find((c) => {
     return c.id === activeChat
   })
@@ -32,10 +33,17 @@ const Chat = () => {
   const onMessage = useCallback(
     (event: MessageEvent<string>) => {
       const eventType = JSON.parse(event.data).type
-      // console.log('event type:', eventType)
+      console.log('event type:', eventType)
+      
+      if (eventType === 'error') {
+        console.log('error:', JSON.parse(event.data))
+        if (JSON.parse(event.data).content === "Display name already in use. Please choose another one.") {
+          setDisplayName('')
+        }
+      }
       if (eventType === 'reaction') {
         const { chatId, reaction, id } = JSON.parse(event.data)
-        if (reaction.author !== session?.user?.email && reaction.author !== session?.user?.name?.replace('#', '-')) {
+        if (reaction.author !== displayName) {
           addReaction(chatId, id, reaction)
         } else {
         }
@@ -43,19 +51,19 @@ const Chat = () => {
       if (eventType === 'reactionRemove') {        
         const { chatId, reaction, id } = JSON.parse(event.data)
         console.log('reactionRemove:', chatId, id, reaction)
-        if (reaction.author !== session?.user?.email && reaction.author !== session?.user?.name?.replace('#', '-')) {
+        if (reaction.author !== displayName) {
           removeReaction(chatId, id, reaction)
         } else {
         }
       }
       if (eventType === 'chat') {
         const { author, content, recipients, chatId, msgId } = JSON.parse(event.data) as IWsMessage
-        console.table({ author, content, recipients: recipients.join(','), chatId })
-        const currentUserId = session?.user?.email || session?.user?.name?.replace('#', '-')
-        if (recipients && currentUserId && !recipients.includes(currentUserId) && !recipients.includes('General')) {
+        console.table({ author, content, recipients: recipients?.join(','), chatId })
+        
+        if (!recipients.includes(displayName) && !recipients.includes('General')) {
           return
         }
-        if (chats.filter((c) => c.id === chatId).length === 0) {
+        if (chats.filter((c) => c.id === chatId).length === 0 && !recipients.includes('General')) {
           addChat({
             id: chatId,
             name: recipients.join(',') || 'General',
@@ -64,20 +72,22 @@ const Chat = () => {
             messages: []
           })
         }
-        addMessage(chatId || '1', {
-          id: msgId,
-          author: author || 'Blade',
-          content: content,
-          reactions: [],
-          recipients: recipients
-        })
-        setMessages((prevMessages) => {
-          const lastMessage = prevMessages[prevMessages.length - 1]
-          if (!lastMessage || lastMessage.message !== event.data) {
-            return [...prevMessages, { message: event.data, timestamp: Date.now() }]
-          }
-          return prevMessages
-        })
+        if (content !== `${displayName} has join the chat`) {
+          addMessage(chatId || '1', {
+            id: msgId,
+            author: author || 'Blade',
+            content: content,
+            reactions: [],
+            recipients: recipients
+          })
+          setMessages((prevMessages) => {
+            const lastMessage = prevMessages[prevMessages.length - 1]
+            if (!lastMessage || lastMessage.message !== event.data) {
+              return [...prevMessages, { message: event.data, timestamp: Date.now() }]
+            }
+            return prevMessages
+          })
+        }
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,6 +1,7 @@
 'use server'
 
 import api from '@/lib/Strapi'
+import CryptoJS from 'crypto-js';
 
 export async function getMe(strapiToken: string) {
   'use server'
@@ -28,6 +29,32 @@ export async function getMeetings(strapiToken: string) {
   if (!meetings) return []
   return meetings
 }
+export async function encrypt(data: any) {
+  'use server'
+  return CryptoJS.AES.encrypt(JSON.stringify(data), process.env.NEXT_PUBLIC_CRYPTO_KEY || 'yz').toString();
+}
+
+export async function decrypt(data: string) {
+  'use server'
+  const bytes = CryptoJS.AES.decrypt(data, process.env.NEXT_PUBLIC_CRYPTO_KEY || 'yz')
+  return bytes.toString(CryptoJS.enc.Utf8);  
+}
+
+// export async function encrypt(data: any) {
+//   'use server'
+//   const key = CryptoJS.enc.Utf8.parse(process.env.NEXT_PUBLIC_CRYPTO_KEY || 'yz');
+//   const iv = CryptoJS.enc.Utf8.parse(process.env.NEXT_PUBLIC_CRYPO_IV || '1234567890123456');
+//   const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), key, { iv: iv });
+//   return encrypted.toString();
+// }
+
+// export async function decrypt(data: string) {
+//   'use server'
+//   const key = CryptoJS.enc.Utf8.parse(process.env.NEXT_PUBLIC_CRYPTO_KEY || 'yz');
+//   const iv = CryptoJS.enc.Utf8.parse(process.env.NEXT_PUBLIC_CRYPO_IV || '1234567890123456');
+//   const decrypted = CryptoJS.AES.decrypt(data, key, { iv: iv });
+//   return decrypted.toString(CryptoJS.enc.Utf8);
+// }
 
 export const addMeeting = async ({
   start,

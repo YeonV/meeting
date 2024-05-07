@@ -1,3 +1,4 @@
+import useStore from '@/store/useStore';
 import { IReaction } from '@/types/chat/IReaction';
 import { Delete } from '@mui/icons-material';
 import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Menu, Popover, Stack, Typography } from '@mui/material';
@@ -21,7 +22,8 @@ const ReactionsPopup = ({
 }: Props) => {
   const { data: session } = useSession()
 
-  const me = session?.user?.email || session?.user?.name?.replace('#', '-') || 'Anonymous'
+  const displayName = useStore((state) => state.displayName)
+  const me = displayName
   return (
     <Popover
       open={open}

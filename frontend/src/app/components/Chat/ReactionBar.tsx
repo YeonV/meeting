@@ -29,6 +29,7 @@ const ReactionBar = ({
   const removeReaction = useStore((state) => state.removeReaction)
   const chats = useStore((state) => state.chats)
   const activeChat = useStore((state) => state.activeChat)
+  const displayName = useStore((state) => state.displayName)
 
   return (
     <HoverPopover
@@ -57,7 +58,7 @@ const ReactionBar = ({
           onEmojiClick={(e) => {
             const r = {
               emoji: e.emoji,
-              author: session?.user?.email || session?.user?.name?.replace('#', '-') || 'Anonymous'
+              author: displayName
             }
             const emojiAlreadyExists =
               chats

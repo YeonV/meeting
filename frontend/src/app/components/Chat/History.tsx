@@ -37,6 +37,7 @@ const History = ({
   const chats = useStore((state) => state.chats)
   const addChat = useStore((state) => state.addChat)
   const setActiveChat = useStore((state) => state.setActiveChat)
+  const displayName = useStore((state) => state.displayName)
   const activeChat = useStore((state) => state.activeChat)
   const chatId = chats.find((chat) => chat.id === activeChat)?.id || '1'
 
@@ -55,13 +56,14 @@ const History = ({
         name: recipient,
         group: false,
         messages: [],
-        members: [recipient, session?.user?.email || session?.user?.name?.replace('#', '-') || 'Anonymous']
+        members: [recipient, displayName]
       })
+      setActiveChat(newerId)
       const msg = JSON.stringify({
         type: 'chat',
         author: 'INTERNAL_SYSTEM_MESSAGE',
         content: 'Chat started!',
-        recipients: [recipient, session?.user?.email || session?.user?.name?.replace('#', '-') || 'General'],
+        recipients: [recipient, displayName || 'General'],
         chatId: newerId
       })
       ws?.send(msg)
@@ -76,7 +78,7 @@ const History = ({
     <List sx={{ flexGrow: 1, maxHeight: `calc(100vh - ${emojiOpen ? 834 : 334}px)`, overflow: 'auto', position: 'relative' }}>
       <HistoryBg />
       {sortedMessages.map(({ author, content, time, reactions, id }, index) => {
-        const isMe = author === session?.user?.email || author === session?.user?.name?.replace('#', '-')
+        const isMe = author === displayName
         const align = isMe ? 'flex-end' : 'flex-start'
 
         const messageDate = formatedDayDate(time)
@@ -95,7 +97,7 @@ const History = ({
           return grouped
         }, {} as Record<string, IReactionWithCount>)
         return (
-          <>
+          <div key={index}>
             {dateChangeMessage}
             <ListItem key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: align, marginBottom: reactions?.length && reactions.length > 0 ? '2rem' : 0 }}>
               {author === 'INTERNAL_SYSTEM_MESSAGE' ? (
@@ -118,7 +120,7 @@ const History = ({
                 </Stack>
               )}
             </ListItem>
-          </>
+          </div>
         )
       })}
       <div ref={messagesEndRef} />

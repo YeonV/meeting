@@ -2,8 +2,8 @@
 
 import { useState, MouseEvent } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
-import { Avatar, Chip, Divider, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
-import { Brightness4, Brightness7, CalendarToday, Chat, DeveloperBoard, List, Login, Logout } from '@mui/icons-material'
+import { Avatar, Chip, Divider, Icon, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
+import { Brightness4, Brightness7, CalendarToday, Chat, ChatBubble, ChatBubbleOutline, DeveloperBoard, Edit, List, Login, Logout } from '@mui/icons-material'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -29,6 +29,8 @@ const TopBarBase = () => {
   const setCurrentTab = useStore((state) => state.setCurrentTab)
   const setMeetings = useStore((state) => state.setMeetings)
   const setOtherMeetings = useStore((state) => state.setOtherMeetings)
+  const displayName = useStore((state) => state.displayName)
+  const setDisplayName = useStore((state) => state.setDisplayName)
   const setMe = useStore((state) => state.setMe)
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -86,7 +88,10 @@ const TopBarBase = () => {
                   onClick={handleMenu}
                   color='inherit'
                 >
-                  <AccountCircle />
+                  {session.user.image
+                    ? <Avatar src={session.user.image} sx={{ width: 30, height: 30 }} />
+                    : <AccountCircle  />
+                  }
                 </IconButton>
                 <Menu
                   id='menu-appbar'
@@ -104,15 +109,44 @@ const TopBarBase = () => {
                   onClose={handleClose}
                 >
                   <MenuItem onClick={handleClose}>
-                    {session.user.image && (
+                    {session.user.image ? (
                       <ListItemIcon>
-                        <Avatar src={session.user.image} sx={{ mr: 2, width: 30, height: 30 }} />
+                        <Avatar src={session.user.image} sx={{ mr: 2, width: 50, height: 50 }} />
+                      </ListItemIcon>
+                    ) : (
+                      <ListItemIcon>
+                        <AccountCircle sx={{ fontSize: 50, mr: 2 }} />
                       </ListItemIcon>
                     )}
-                    {session.user.name}
+                    <Stack direction='column'>
+                      <Stack direction='row'>
+                        <Typography variant='h6'>
+                          {displayName}
+                        </Typography>
+
+                        <IconButton
+                          size='small'
+                          onClick={() => {
+                            setDisplayName('')
+                          }}
+                          sx={{ color: theme.palette.text.disabled, fontSize: 12, ml: 1 }}
+                        >
+                          <Edit sx={{ fontSize: 20 }} />
+                        </IconButton>
+
+                      </Stack>
+                      <Typography variant='caption' color={'InactiveCaptionText'}>
+                        {session.user.name}
+                      </Typography>
+                    </Stack>
                   </MenuItem>
                   <Divider />
-                  <MenuItem onClick={handleClose}>Test</MenuItem>
+                  <MenuItem onClick={() => setDisplayName('')}>
+                  <ListItemIcon>
+                      <ChatBubbleOutline />
+                    </ListItemIcon>
+                    <ListItemText>Clear DisplayName</ListItemText>
+                  </MenuItem>
                   <Divider />
                   <MenuItem
                     onClick={() => {

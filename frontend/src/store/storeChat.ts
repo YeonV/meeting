@@ -6,6 +6,15 @@ import { v4 as uuidv4 } from 'uuid'
 import { IReaction } from '@/types/chat/IReaction'
 
 const storeChat = (set: any, get: any) => ({
+  displayName: '',
+  setDisplayName: (name: string): void =>
+    set(
+      produce((state: IStore) => {
+        state.displayName = name
+      }),
+      false,
+      'chat/setDisplayName'
+    ),
   activeChat: '1',
   setActiveChat: (chatName: string): void =>
     set(
@@ -48,13 +57,13 @@ const storeChat = (set: any, get: any) => ({
     ),
   addChat: (chat: IChat): string => {
     if (!chat.id) chat.id = uuidv4()
-    set(
-      produce((state: IStore) => {
-        state.activeChat = chat.id!
-      }),
-      false,
-      'chat/setActiveChat'
-    )
+    // set(
+    //   produce((state: IStore) => {
+    //     state.activeChat = chat.id!
+    //   }),
+    //   false,
+    //   'chat/setActiveChat'
+    // )
 
     set(
       produce((state: IStore) => {
