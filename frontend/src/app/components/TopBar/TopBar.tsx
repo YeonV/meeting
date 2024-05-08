@@ -47,7 +47,6 @@ const TopBarBase = () => {
   const displayName = useStore((state) => state.displayName)
   const setDisplayName = useStore((state) => state.setDisplayName)
   const setMe = useStore((state) => state.setMe)
-  const showSnackbar = useStore((state) => state.showSnackbar)
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 

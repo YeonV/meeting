@@ -28,27 +28,6 @@ const storeUI = (set: any) => ({
       }),
       false,
       'ui/setDev'
-    ),
-  snackbar: {
-    isOpen: false,
-    messageType: 'error' as 'error' | 'default' | 'success' | 'warning' | 'info',
-    message: 'NO MESSAGE'
-  },
-  showSnackbar: (messageType: 'error' | 'default' | 'success' | 'warning' | 'info', message: string): void =>
-    set(
-      produce((state: IStore) => {
-        state.snackbar = { isOpen: true, message, messageType }
-      }),
-      false,
-      'ui/showSnackbar'
-    ),
-  clearSnackbar: (): void =>
-    set(
-      produce((state: IStore) => {
-        state.snackbar.isOpen = false
-      }),
-      false,
-      'ui/clearSnackbar'
     )
 })
 
