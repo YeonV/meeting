@@ -3,7 +3,20 @@
 import { useState, MouseEvent } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { Avatar, Chip, Divider, Icon, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
-import { Brightness4, Brightness7, CalendarToday, Chat, ChatBubble, ChatBubbleOutline, DeveloperBoard, Edit, List, Login, Logout } from '@mui/icons-material'
+import {
+  Brightness4,
+  Brightness7,
+  CalendarToday,
+  Chat,
+  ChatBubble,
+  ChatBubbleOutline,
+  DeveloperBoard,
+  Edit,
+  List,
+  Login,
+  Logout,
+  MessageRounded
+} from '@mui/icons-material'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -15,10 +28,12 @@ import useStore from '@/store/useStore'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Image from 'next/image'
 import { IMe } from '@/types/meeting/IMe'
+import { useSnackbar } from 'notistack'
 
 const TopBarBase = () => {
   const { data: session } = useSession()
   const theme = useTheme()
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   const darkMode = useStore((state) => state.darkMode)
   const setDarkMode = useStore((state) => state.setDarkMode)
@@ -32,6 +47,7 @@ const TopBarBase = () => {
   const displayName = useStore((state) => state.displayName)
   const setDisplayName = useStore((state) => state.setDisplayName)
   const setMe = useStore((state) => state.setMe)
+  const showSnackbar = useStore((state) => state.showSnackbar)
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
@@ -88,10 +104,7 @@ const TopBarBase = () => {
                   onClick={handleMenu}
                   color='inherit'
                 >
-                  {session.user.image
-                    ? <Avatar src={session.user.image} sx={{ width: 30, height: 30 }} />
-                    : <AccountCircle  />
-                  }
+                  {session.user.image ? <Avatar src={session.user.image} sx={{ width: 30, height: 30 }} /> : <AccountCircle />}
                 </IconButton>
                 <Menu
                   id='menu-appbar'
@@ -120,9 +133,7 @@ const TopBarBase = () => {
                     )}
                     <Stack direction='column'>
                       <Stack direction='row'>
-                        <Typography variant='h6'>
-                          {displayName}
-                        </Typography>
+                        <Typography variant='h6'>{displayName}</Typography>
 
                         <IconButton
                           size='small'
@@ -133,7 +144,6 @@ const TopBarBase = () => {
                         >
                           <Edit sx={{ fontSize: 20 }} />
                         </IconButton>
-
                       </Stack>
                       <Typography variant='caption' color={'InactiveCaptionText'}>
                         {session.user.name}
@@ -142,7 +152,7 @@ const TopBarBase = () => {
                   </MenuItem>
                   <Divider />
                   <MenuItem onClick={() => setDisplayName('')}>
-                  <ListItemIcon>
+                    <ListItemIcon>
                       <ChatBubbleOutline />
                     </ListItemIcon>
                     <ListItemText>Clear DisplayName</ListItemText>
@@ -168,6 +178,9 @@ const TopBarBase = () => {
                 <Login />
               </IconButton>
             )}
+            <IconButton color='inherit' onClick={() => enqueueSnackbar('I love hooks', { variant: 'info' })}>
+              <MessageRounded />
+            </IconButton>
           </Stack>
         </Toolbar>
       </AppBar>

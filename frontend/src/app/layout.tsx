@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
 import { Inter } from 'next/font/google'
-import { getServerSession } from 'next-auth'
-import { ThemeProvider } from './Providers/ThemeProvider'
-import { NextAuthProvider } from './Providers/SessionProvider'
 import TopBar from './components/TopBar/TopBar'
+// import { getServerSession } from 'next-auth'
+
 import './globals.css'
+import Providers from './Providers/Providers'
+import Footer from './components/Footer/Footer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,30 +21,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await getServerSession()
+  // const session = await getServerSession()
 
   return (
     <html lang='en'>
       <link rel='icon' href='/favicon.ico' sizes='any' />
       <body className={inter.className}>
-        <AppRouterCacheProvider>
-          <ThemeProvider>
-            <NextAuthProvider>
-              <TopBar />
-              {children}
-
-              {/* {session && session.user ? (
-                <div>
-                  <p>Authenticated</p>
-                </div>
-              ) : (
-                <div>
-                  <p>Not authenticated</p>
-                </div>
-              )} */}
-            </NextAuthProvider>
-          </ThemeProvider>
-        </AppRouterCacheProvider>
+        <Providers>
+          <TopBar />
+          {children}
+          <Footer />
+        </Providers>
       </body>
     </html>
   )

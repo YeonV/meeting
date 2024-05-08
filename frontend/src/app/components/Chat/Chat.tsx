@@ -5,10 +5,10 @@ import { useSession } from 'next-auth/react'
 import { useWebSocket } from 'next-ws/client'
 import useStore from '@/store/useStore'
 import { Box, Stack } from '@mui/material'
-import MessageBar from './Chat/MessageBar'
-import HeaderBar from './Chat/HeaderBar'
-import History from './Chat/History'
-import Userlist from './Chat/Userlist'
+import MessageBar from './MessageBar'
+import HeaderBar from './HeaderBar'
+import History from './History'
+import Userlist from './Userlist'
 import { IWsMessage } from '@/types/chat/IMessage'
 
 const Chat = () => {
@@ -34,10 +34,10 @@ const Chat = () => {
     (event: MessageEvent<string>) => {
       const eventType = JSON.parse(event.data).type
       console.log('event type:', eventType)
-      
+
       if (eventType === 'error') {
         console.log('error:', JSON.parse(event.data))
-        if (JSON.parse(event.data).content === "Display name already in use. Please choose another one.") {
+        if (JSON.parse(event.data).content === 'Display name already in use. Please choose another one.') {
           setDisplayName('')
         }
       }
@@ -48,7 +48,7 @@ const Chat = () => {
         } else {
         }
       }
-      if (eventType === 'reactionRemove') {        
+      if (eventType === 'reactionRemove') {
         const { chatId, reaction, id } = JSON.parse(event.data)
         console.log('reactionRemove:', chatId, id, reaction)
         if (reaction.author !== displayName) {
@@ -59,7 +59,7 @@ const Chat = () => {
       if (eventType === 'chat') {
         const { author, content, recipients, chatId, msgId } = JSON.parse(event.data) as IWsMessage
         console.table({ author, content, recipients: recipients?.join(','), chatId })
-        
+
         if (!recipients.includes(displayName) && !recipients.includes('General')) {
           return
         }
