@@ -73,10 +73,11 @@ services:
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
     volumes:
       - ./.env:/opt/app/.env
-      - ./backend/public/uploads:/opt/app/public/uploads
+      - ./backend/public:/opt/app/public
       - ./backend/config/sync:/opt/app/config/sync
+      - ./backend/migrations:/opt/app/migrations
       - ${PWD}/backend/config/plugin.ts:/opt/app/config/plugin.ts
-      - ./backend/tsconfig.json:/opt/app/tsconfig.json
+      - ${PWD}/backend/tsconfig.json:/opt/app/tsconfig.json
     ports:
       - '${STRAPI_PORT}:1337'
     depends_on:
