@@ -3,3 +3,4 @@ ws/node_modules
 backend/data
 # frontend
 frontend/.nextdev
+.DS_Store
