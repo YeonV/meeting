@@ -5,9 +5,9 @@ export default () => ({
             importOnBootstrap: false,
             customTypes: [
                 {
-                    uid: 'api::meeting.meeting',
+                    uid: 'meeting',
                     configName: 'Meeting',
-                    queryString: 'meeting'
+                    queryString: 'api::meeting.meeting'
                 }
             
             ] 
