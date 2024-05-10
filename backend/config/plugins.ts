@@ -6,7 +6,7 @@ export default () => ({
             customTypes: [
                 {
                     uid: 'meeting',
-                    configName: 'Meeting',
+                    configName: 'meeting',
                     queryString: 'api::meeting.meeting'
                 }
             
