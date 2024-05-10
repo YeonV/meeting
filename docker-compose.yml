@@ -76,7 +76,7 @@ services:
       - ./backend/public:/opt/app/public
       - ./backend/config/sync:/opt/app/config/sync
       - ./backend/migrations:/opt/app/migrations
-      - ./backend/api:/opt/app/src/api
+      # - ./backend/api:/opt/app/src/api
       # - ${PWD}/backend/config/plugins.ts:/opt/app/config/plugins.ts # PWD only works on osx. try "." on windows
       # - ${PWD}/backend/tsconfig.json:/opt/app/tsconfig.json # PWD only works on osx. try "." on windows
     ports:
