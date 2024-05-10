@@ -41,7 +41,7 @@ const initAdminData = (env) => {
         password: env.INIT_ADMIN_PASSWORD || 'admin',
         firstname: env.INIT_ADMIN_FIRSTNAME || 'Admin',
         lastname: env.INIT_ADMIN_LASTNAME || 'Admin',
-        email: env.INIT_ADMIN_EMAIL || 'admin@your-domain.com',
+        email: env.INIT_ADMIN_EMAIL || 'admin@strapi.com',
         blocked: false,
         isActive: true,
         ...(typeof env.INIT_ADMIN === "string" && env.INIT_ADMIN.includes('{"') && {
