@@ -18,11 +18,10 @@
     "End": {
       "type": "datetime"
     },
-    "users_permissions_user": {
+    "user": {
       "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "meetings"
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
     },
     "title": {
       "type": "string"
