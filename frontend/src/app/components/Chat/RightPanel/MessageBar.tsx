@@ -2,14 +2,17 @@ import { AppBar, Box, IconButton, TextField, Toolbar, useTheme } from '@mui/mate
 import SendIcon from '@mui/icons-material/Send'
 import { useWebSocket } from 'next-ws/client'
 import { Dispatch, SetStateAction, useRef, useState } from 'react'
-import EmojiPicker, { EmojiStyle, Theme } from 'emoji-picker-react'
+import EmojiPicker, { Theme } from 'emoji-picker-react'
 import { Close, SentimentSatisfiedAlt } from '@mui/icons-material'
 import useStore from '@/store/useStore'
 import { v4 as uuidv4 } from 'uuid'
+import useTranslation from '@/lib/utils'
 
 const MessageBar = ({ rounded, emojiOpen, setEmojiOpen }: { rounded?: boolean; emojiOpen: boolean; setEmojiOpen: Dispatch<SetStateAction<boolean>> }) => {
   const ws = useWebSocket()
   const theme = useTheme()
+  const language = useStore((state) => state.language)
+  const { t } = useTranslation(language)
   const inputRef = useRef<HTMLInputElement>(null)
   const [inputValue, setInputValue] = useState('' as string)
   const activeChat = useStore((state) => state.activeChat)
@@ -29,6 +32,47 @@ const MessageBar = ({ rounded, emojiOpen, setEmojiOpen }: { rounded?: boolean; e
     <>
       <EmojiPicker
         autoFocusSearch
+        searchPlaceHolder={t('Search')}
+        categories={
+          [
+            {
+              category: 'suggested',
+              name: t('Recently Used')
+            },
+            {
+              category: 'smileys_people',
+              name: t('Smileys')
+            },
+            {
+              category: 'animals_nature',
+              name: t('Animals')
+            },
+            {
+              category: 'food_drink',
+              name: t('Food')
+            },
+            {
+              category: 'activities',
+              name: t('Activities')
+            },
+            {
+              category: 'travel_places',
+              name: t('Travel')
+            },
+            {
+              category: 'objects',
+              name: t('Objects')
+            },
+            {
+              category: 'symbols',
+              name: t('Symbols')
+            },
+            {
+              category: 'flags',
+              name: t('Flags')
+            }
+          ] as any
+        }
         style={{ '--epr-emoji-size': '50px' } as any}
         // emojiStyle={'native' as EmojiStyle}
         previewConfig={{ showPreview: false }}
@@ -53,7 +97,7 @@ const MessageBar = ({ rounded, emojiOpen, setEmojiOpen }: { rounded?: boolean; e
               {emojiOpen ? <Close /> : <SentimentSatisfiedAlt />}
             </IconButton>
             <TextField
-              placeholder='Gib eine Nachricht ein.'
+              placeholder={t('Type your message')}
               ref={inputRef}
               autoFocus
               value={inputValue}

@@ -1,7 +1,28 @@
 import { produce } from 'immer'
 import type { IStore } from './useStore'
+import { LanguageCode } from '@/lib/translations'
 
 const storeUI = (set: any) => ({
+  language: 'en' as LanguageCode,
+  setLanguage: (to: LanguageCode): void =>
+    set(
+      produce((state: IStore) => {
+        state.language = to
+      }),
+      false,
+      'ui/setLanguage'
+    ),
+  dialogs: {
+    deleteChat: false
+  },
+  setDialogs: (dialog: 'deleteChat', to: boolean): void =>
+    set(
+      produce((state: IStore) => {
+        state.dialogs[dialog] = to
+      }),
+      false,
+      'ui/setDialogs'
+    ),
   darkMode: true,
   setDarkMode: (to: boolean): void =>
     set(

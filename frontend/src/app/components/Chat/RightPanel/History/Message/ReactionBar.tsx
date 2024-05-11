@@ -1,3 +1,4 @@
+import useTranslation from '@/lib/utils'
 import useStore from '@/store/useStore'
 import { Close, SentimentSatisfiedAlt } from '@mui/icons-material'
 import { IconButton, Stack, useTheme } from '@mui/material'
@@ -7,22 +8,10 @@ import { useSession } from 'next-auth/react'
 import { useWebSocket } from 'next-ws/client'
 import { useState } from 'react'
 
-const ReactionBar = ({
-  msgId,
-  popupState,
-  bindPopover,
-  invert
-}: {
-  msgId: string,
-  popupState: any,
-  bindPopover: any,
-  invert?: boolean
-
-}) => {
+const ReactionBar = ({ msgId, popupState, bindPopover, invert }: { msgId: string; popupState: any; bindPopover: any; invert?: boolean }) => {
   const theme = useTheme()
   const ws = useWebSocket()
   const { data: session } = useSession()
-
 
   const [reactionOpen, setReactionOpen] = useState(false)
   const addReaction = useStore((state) => state.addReaction)
@@ -30,6 +19,8 @@ const ReactionBar = ({
   const chats = useStore((state) => state.chats)
   const activeChat = useStore((state) => state.activeChat)
   const displayName = useStore((state) => state.displayName)
+  const language = useStore((state) => state.language)
+  const { t } = useTranslation(language)
 
   return (
     <HoverPopover
@@ -50,6 +41,7 @@ const ReactionBar = ({
         </IconButton>
         <EmojiPicker
           autoFocusSearch
+          searchPlaceHolder={t('Search')}
           style={{ '--epr-emoji-size': '20px' } as any}
           reactionsDefaultOpen={true}
           previewConfig={{ showPreview: false }}
@@ -62,9 +54,9 @@ const ReactionBar = ({
             }
             const emojiAlreadyExists =
               chats
-                ?.find((c) => c.id === activeChat)?.messages
-                ?.find((m) => m.id === msgId)?.reactions
-                ?.some((re) => re.emoji === r.emoji && re.author === r.author) || false
+                ?.find((c) => c.id === activeChat)
+                ?.messages?.find((m) => m.id === msgId)
+                ?.reactions?.some((re) => re.emoji === r.emoji && re.author === r.author) || false
 
             if (!emojiAlreadyExists) {
               addReaction(activeChat, msgId, r)

@@ -79,6 +79,7 @@ const Slot = ({
   const isMeetingEnd = meeting && meetingEndDate && meetingEndDate.getTime() === slotEndDate.getTime()
   const [addMeetingOpen, setAddMeetingOpen] = useState(false)
   const [editMeetingOpen, setEditMeetingOpen] = useState(false)
+  const language = useStore((state) => state.language)
 
   const fetchMeetings = useStore((state) => state.fetchMeetings)
   const removeMeeting = useStore((state) => state.removeMeeting)
@@ -164,9 +165,9 @@ const Slot = ({
           <>{meeting.title?.substring(0, 35) || 'belegt'}</>
         ) : (
           <>
-            {formatTime(whole, minutes)} - {formatTime(wholeEnd, minutesEnd)}
+            {formatTime(whole, minutes, language)} - {formatTime(wholeEnd, minutesEnd, language)}
             <Typography variant='caption' sx={{ display: 'block' }}>
-              {new Intl.DateTimeFormat(window.navigator.language, {}).format(new Date(date))}
+              {new Intl.DateTimeFormat(language, {}).format(new Date(date))}
             </Typography>
           </>
         )}
@@ -189,7 +190,7 @@ const Slot = ({
           </Stack>
           <Typography>
             Datum:{' '}
-            {new Intl.DateTimeFormat(window.navigator.language, {
+            {new Intl.DateTimeFormat(language, {
               weekday: 'long',
               year: 'numeric',
               month: 'long',
@@ -265,7 +266,7 @@ const Slot = ({
           <Stack direction='row' alignItems={'center'} pt={4}>
             <Typography sx={{ width: 80, display: 'block' }}>Datum:</Typography>
             <Typography sx={{ display: 'block' }}>
-              {new Intl.DateTimeFormat(window.navigator.language, {
+              {new Intl.DateTimeFormat(language, {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -359,7 +360,7 @@ const Slot = ({
         <Card sx={{ p: 1 }}>
           <CardHeader
             title={meeting?.title}
-            subheader={`${new Intl.DateTimeFormat(window.navigator.language, {
+            subheader={`${new Intl.DateTimeFormat(language, {
               weekday: 'long',
               year: 'numeric',
               month: 'long',

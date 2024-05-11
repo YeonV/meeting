@@ -37,7 +37,7 @@
     "middleware.ts_",
     "build/types/**/*.ts",
     ".nextdev/types/**/*.ts"
-, "middleware.old-ts"  ],
+, "middleware.old-ts", "src/app/layout.tsx", "src/app/page.tsx", "src/app/[locale]/page.tsx.test", "src/app/[locale]/layout.tsx.test"  ],
   "exclude": [
     "node_modules"
   ]

@@ -5,11 +5,12 @@ import { useSession } from 'next-auth/react'
 import { useWebSocket } from 'next-ws/client'
 import useStore from '@/store/useStore'
 import { Box, Stack } from '@mui/material'
-import MessageBar from './MessageBar'
-import HeaderBar from './HeaderBar'
-import History from './History'
-import Userlist from './Userlist'
+import MessageBar from './RightPanel/MessageBar'
 import { IWsMessage } from '@/types/chat/IMessage'
+import useTranslation from '@/lib/utils'
+import History from './RightPanel/History/History'
+import Userlist from './LeftPanel/Userlist'
+import HeaderBar from './RightPanel/HeaderBar'
 
 const Chat = () => {
   const { data: session } = useSession()
@@ -24,6 +25,8 @@ const Chat = () => {
   const removeReaction = useStore((state) => state.removeReaction)
   const displayName = useStore((state) => state.displayName)
   const setDisplayName = useStore((state) => state.setDisplayName)
+  const language = useStore((state) => state.language)
+  const { t } = useTranslation(language)
   const chat = chats.find((c) => {
     return c.id === activeChat
   })
@@ -72,7 +75,7 @@ const Chat = () => {
             messages: []
           })
         }
-        if (content !== `${displayName} has join the chat`) {
+        if (content !== `${displayName} ${t('has join the chat')}`) {
           addMessage(chatId || '1', {
             id: msgId,
             author: author || 'Blade',

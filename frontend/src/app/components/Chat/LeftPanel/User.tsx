@@ -1,3 +1,4 @@
+import useTranslation from '@/lib/utils'
 import useStore from '@/store/useStore'
 import { Avatar, Box, Stack, Typography, useTheme } from '@mui/material'
 import moment from 'moment'
@@ -21,6 +22,8 @@ const User = ({
   const { data: session } = useSession()
 
   const theme = useTheme()
+  const language = useStore((state) => state.language)
+  const { t } = useTranslation(language)
   const activeChat = useStore((state) => state.activeChat)
   const chats = useStore((state) => state.chats)
   const displayName = useStore((state) => state.displayName)
@@ -60,7 +63,7 @@ const User = ({
             color={theme.palette.text.disabled}
             sx={{ border: '1px solid', padding: '0 8px', borderRadius: 1 }}
           >
-            group
+            {t('Group')}
           </Typography>
         )}
         <Typography color={theme.palette.text.disabled}>{displayTime}</Typography>

@@ -30,7 +30,12 @@ export const ThemeProvider = ({ children }: Props) => {
             },
             styleOverrides: {
               root: {
-                textTransform: 'none'
+                textTransform: 'none',
+                fontWeight: 300,
+                padding: '0.4rem 2rem',
+                fontSize: 18,
+                borderRadius: 22,
+                borderColor: 'rgba(128, 128, 128, 0.4)'
               }
             }
           }

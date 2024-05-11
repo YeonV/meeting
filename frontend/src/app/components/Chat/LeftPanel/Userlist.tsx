@@ -1,12 +1,20 @@
 import useStore from '@/store/useStore'
-import { FilterList, MoreVert, Search } from '@mui/icons-material'
-import { AppBar, Avatar, Box, IconButton, Stack, TextField, Toolbar, useTheme } from '@mui/material'
+import { ArrowBack, FilterList, MoreVert, Search } from '@mui/icons-material'
+import { AppBar, Avatar, Box, IconButton, Stack, TextField, Toolbar, Typography, useTheme } from '@mui/material'
 import User from './User'
+import useTranslation from '@/lib/utils'
+import { useSession } from 'next-auth/react'
+import zIndex from '@mui/material/styles/zIndex'
+import { useState } from 'react'
+import UserProfile from './UserProfile'
 
 const Userlist = ({ me }: { me: string }) => {
   const theme = useTheme()
-
+  const language = useStore((state) => state.language)
   const chats = useStore((state) => state.chats)
+  const { t } = useTranslation(language)
+  const { data: session } = useSession()
+  const [userProfileOpen, setUserProfileOpen] = useState(false)
 
   return (
     <Box
@@ -19,13 +27,31 @@ const Userlist = ({ me }: { me: string }) => {
         borderRight: '1px solid #5555',
         p: 0,
         paddingTop: '64px',
-        position: 'relative'
+        position: 'relative',
+        overflowX: 'hidden'
       }}
     >
-      <AppBar position='absolute' elevation={2}>
+      <AppBar position='absolute' elevation={2} sx={{ zIndex: 10 }}>
         <Toolbar>
           <Stack direction='row' alignItems='center' justifyContent='space-between' flex={1}>
-            <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText, mr: 2 }}>{me?.charAt(0)}</Avatar>
+            {userProfileOpen ? (
+              <>
+                <IconButton color='inherit' sx={{ mr: 2, ml: 0, p: 0 }} onClick={() => setUserProfileOpen(!userProfileOpen)}>
+                  <ArrowBack />
+                </IconButton>
+                <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+                  {t('Profile')}
+                </Typography>
+              </>
+            ) : (
+              <IconButton color='inherit' sx={{ mr: 2, ml: 0, p: 0 }} onClick={() => setUserProfileOpen(!userProfileOpen)}>
+                {session?.user.image ? (
+                  <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText }} src={session?.user.image} />
+                ) : (
+                  <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText }}>{me?.charAt(0)}</Avatar>
+                )}
+              </IconButton>
+            )}
             <Stack direction='row' spacing={2} alignItems='center' justifyContent='space-between'>
               <IconButton color='inherit'>
                 <MoreVert />
@@ -36,7 +62,7 @@ const Userlist = ({ me }: { me: string }) => {
       </AppBar>
       <Stack direction='row' alignItems='center' justifyContent='center' padding={'0.75rem 1rem'}>
         <TextField
-          placeholder='Suchen'
+          placeholder={t('Search')}
           autoFocus
           // value={inputValue}
           // onChange={(e) => setInputValue(e.target.value)}
@@ -82,36 +108,8 @@ const Userlist = ({ me }: { me: string }) => {
             />
           )
         })}
-        {/* {chats.map((chat) => {
-          const timeFromNow = moment(chat.time).fromNow()
-          const formattedDate = moment(chat.time).format('DD.MM.YYYY, hh:mm')
-          const displayTime = moment().diff(moment(chat.time), 'days') <= 2 ? timeFromNow : formattedDate
-          return (
-            <Box
-              key={chat.id}
-              sx={{
-                'display': 'flex',
-                'flexDirection': 'row',
-                'alignItems': 'center',
-                'p': 2,
-                'cursor': 'pointer',
-                'borderBottom': '1px solid #5555',
-                'backgroundColor': activeChat === chat.id ? '#5555' : 'transparent',
-                '&:hover': {
-                  backgroundColor: '#5553'
-                }
-              }}
-            >
-              <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText, mr: 2 }}>{chat.name.charAt(0)}</Avatar>
-              <Stack direction='column' spacing={0} alignItems='flex-start' flex={1}>
-                <Box>{chat.name}</Box>
-                <Typography color={theme.palette.text.disabled}>{chat.message}</Typography>
-              </Stack>
-              <Typography color={theme.palette.text.disabled}>{displayTime}</Typography>
-            </Box>
-          )
-        })} */}
       </Box>
+      <UserProfile open={userProfileOpen} />
     </Box>
   )
 }

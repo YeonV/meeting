@@ -14,6 +14,7 @@ const Meeting = ({ meeting, notify }: { meeting: IMeeting; notify?: () => void }
   const fetchMeetings = useStore((state) => state.fetchMeetings)
   const [edit, setEdit] = useState(false)
   const descriptionRef = useRef<HTMLInputElement>(null)
+  const language = useStore((state) => state.language)
 
   return (
     <Grid item key={meeting.id}>
@@ -21,10 +22,10 @@ const Meeting = ({ meeting, notify }: { meeting: IMeeting; notify?: () => void }
         <CardHeader title={meeting.title} subheader={moment(meeting.Start).fromNow()} />
         <CardContent sx={{ pt: 0 }}>
           <Divider sx={{ mb: 2 }} />
-          <CardLine label='Datum' value={renderDate(meeting.Start)} />
-          <CardLine label='Dauer' value={renderDuration(meeting.Start, meeting.End)} />
-          <CardLine label='Start' value={renderTime(meeting.Start)} />
-          <CardLine label='Ende' value={renderTime(meeting.End)} />
+          <CardLine label='Datum' value={renderDate(meeting.Start, language)} />
+          <CardLine label='Dauer' value={renderDuration(meeting.Start, meeting.End, language)} />
+          <CardLine label='Start' value={renderTime(meeting.Start, language)} />
+          <CardLine label='Ende' value={renderTime(meeting.End, language)} />
           <Divider sx={{ my: 2 }} />
           <Typography color='text.secondary' sx={{ fontSize: 14, marginBottom: 0.5 }} component='div'>
             Beschreibung:

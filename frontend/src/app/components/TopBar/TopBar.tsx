@@ -29,6 +29,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import Image from 'next/image'
 import { IMe } from '@/types/meeting/IMe'
 import { useSnackbar } from 'notistack'
+import LocaleSelector from './LocalSelector'
 
 const TopBarBase = () => {
   const { data: session } = useSession()
@@ -90,6 +91,8 @@ const TopBarBase = () => {
                 <DeveloperBoard />
               </IconButton>
             )}
+
+            <LocaleSelector />
             <IconButton onClick={() => setDarkMode(!darkMode)} color='inherit'>
               {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
             </IconButton>

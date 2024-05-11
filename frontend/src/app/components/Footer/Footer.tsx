@@ -6,17 +6,18 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import useStore from '@/store/useStore'
+import useTranslation from '@/lib/utils'
 
 const Footer = () => {
-  const theme = useTheme()
-  const darkMode = useStore((state) => state.darkMode)
+  const language = useStore((state) => state.language)
+  const { t } = useTranslation(language)
 
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position='sticky' sx={{ bottom: 0 }} color='inherit'>
         <Toolbar sx={{ justifyContent: 'flex-end' }}>
           <Typography variant='body2' color='GrayText'>
-            created by Blade
+            {t('Footer text')}
           </Typography>
         </Toolbar>
       </AppBar>

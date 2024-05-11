@@ -33,7 +33,7 @@ const storeChat = (set: any, get: any) => ({
         {
           id: uuidv4(),
           author: 'INTERNAL_SYSTEM_MESSAGE',
-          content: 'Welcome!',
+          content: 'Hi!',
           time: +new Date(),
           reactions: [],
           recipients: ['General']
@@ -85,7 +85,23 @@ const storeChat = (set: any, get: any) => ({
   clearChats: (): void =>
     set(
       produce((state: IStore) => {
-        state.chats = []
+        state.chats = [
+          {
+            id: '1',
+            name: 'General',
+            group: true,
+            messages: [
+              {
+                id: uuidv4(),
+                author: 'INTERNAL_SYSTEM_MESSAGE',
+                content: 'Hi!',
+                time: +new Date(),
+                reactions: [],
+                recipients: ['General']
+              }
+            ]
+          }
+        ] as IChat[]
       }),
       false,
       'chat/clearChats'
@@ -154,7 +170,9 @@ const storeChat = (set: any, get: any) => ({
           c.id === chatId
             ? {
                 ...c,
-                messages: c.messages.map((m) => (m.id === messageId ? { ...m, reactions: m.reactions?.filter((r) => r.author !== reaction.author || r.emoji !== reaction.emoji) } : m))
+                messages: c.messages.map((m) =>
+                  m.id === messageId ? { ...m, reactions: m.reactions?.filter((r) => r.author !== reaction.author || r.emoji !== reaction.emoji) } : m
+                )
               }
             : c
         )

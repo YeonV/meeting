@@ -1,4 +1,5 @@
 import { formatTime } from '@/lib/utils'
+import useStore from '@/store/useStore'
 import { Button, SxProps, Theme, useTheme } from '@mui/material'
 import { MutableRefObject } from 'react'
 
@@ -18,6 +19,7 @@ const CaptionTime = ({
   sx?: SxProps<Theme>
 }) => {
   const theme = useTheme()
+  const language = useStore((state) => state.language)
   const [whole, fraction] = slot.split('.')
   const minutes = fraction ? (parseInt(fraction) * 60) / 100 : '00'
   const iscurrentSlot = Number(slot) <= currentSlot && Number(slot) + 0.25 > currentSlot
@@ -35,7 +37,7 @@ const CaptionTime = ({
         ...sx
       }}
     >
-      {formatTime(whole, minutes)}
+      {formatTime(whole, minutes, language)}
     </Button>
   )
 }
