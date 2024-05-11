@@ -24,9 +24,14 @@ const LocaleSelector = (): ReactNode => {
               <Image src={`/${lang === 'en' ? 'us' : lang}.png`} alt={lang} width={30} height={20} />
             </ListItemIcon>
             <ListItemText
-              primary={new Intl.DisplayNames(lang, {
-                type: 'language'
-              }).of(lang)}
+              sx={{ textTransform: 'capitalize' }}
+              primary={
+                lang === 'lk'
+                  ? 'Tamil'
+                  : new Intl.DisplayNames(lang, {
+                      type: 'language'
+                    }).of(lang)
+              }
             />
           </MenuItem>
         ))}
