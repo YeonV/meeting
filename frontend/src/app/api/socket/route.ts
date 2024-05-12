@@ -1,12 +1,10 @@
 import { WebSocket, WebSocketServer } from 'ws'
 import { IncomingMessage } from 'http'
 import { decrypt } from '@/app/actions'
+import { WebSocketServerService } from './WebSocketServerService'
 
-export async function SOCKET(
-  client: WebSocket,
-  request: IncomingMessage,
-  server: WebSocketServer
-) {
+const webSocketServerService = new WebSocketServerService()
+export async function SOCKET(client: WebSocket, request: IncomingMessage, server: WebSocketServer) {
   const query = new URLSearchParams(request.url!.split('?')[1])
   const webSocket = (global as any)?.['wsServer'] as WebSocketServer
   const clients: Array<WebSocket> = Array.from(
@@ -70,4 +68,5 @@ export async function SOCKET(
     })
   })
   ;(global as any)['wsServer'] = server
+  webSocketServerService.setServer(server)
 }

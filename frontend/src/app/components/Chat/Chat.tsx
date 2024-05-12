@@ -11,9 +11,12 @@ import useTranslation from '@/lib/utils'
 import History from './RightPanel/History/History'
 import Userlist from './LeftPanel/Userlist'
 import HeaderBar from './RightPanel/HeaderBar'
+import { useSnackbar } from 'notistack'
 
 const Chat = () => {
   const { data: session } = useSession()
+  const { enqueueSnackbar } = useSnackbar()
+
   const [messages, setMessages] = useState<{ message: string; timestamp: number }[]>([])
   // const [readMessages, setReadMessages] = useState<{ message: string; timestamp: number }[]>([])
   const [emojiOpen, setEmojiOpen] = useState(false)
@@ -38,6 +41,11 @@ const Chat = () => {
       const eventType = JSON.parse(event.data).type
       console.log('event type:', eventType)
 
+      if (eventType === 'notify') {
+        const data = JSON.parse(event.data)
+        // console.log(data.variant, data.content)
+        enqueueSnackbar(data.content, { variant: data.variant || 'info' })
+      }
       if (eventType === 'error') {
         console.log('error:', JSON.parse(event.data))
         if (JSON.parse(event.data).content === 'Display name already in use. Please choose another one.') {
