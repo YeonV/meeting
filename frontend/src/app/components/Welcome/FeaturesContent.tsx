@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import { Button, List, ListItem, ListItemIcon } from '@mui/material'
+import { Button, List, ListItem, ListItemIcon, Stack } from '@mui/material'
 import { CheckCircleOutline } from '@mui/icons-material'
 
 interface TabPanelProps {
@@ -14,11 +14,7 @@ function TabPanel(props: TabPanelProps) {
 
   return (
     <div role='tabpanel' hidden={value !== index} id={`vertical-tabpanel-${index}`} aria-labelledby={`vertical-tab-${index}`} {...other}>
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   )
 }
@@ -34,7 +30,7 @@ const FeatureContent = ({
   title: string
   subtitle: string
   points: string[]
-  links?: string[]
+  links?: { name: string; url: string }[]
   value?: number
   index?: number
 }) => (
@@ -63,13 +59,15 @@ const FeatureContent = ({
     <Typography variant='subtitle1' style={{ fontSize: '1.2rem', fontWeight: 100, marginTop: '0rem', marginBottom: '2rem' }}>
       Explore more about {title} and unlock its full potential.
     </Typography>
-    {links &&
-      links.length > 0 &&
-      links.map((l) => (
-        <Button key={l} variant='contained' color='primary' sx={{ mt: 2 }} onClick={() => window.open(l, '_blank', 'noopener,noreferrer')}>
-          Learn More
-        </Button>
-      ))}
+    <Stack direction='row' spacing={2}>
+      {links &&
+        links.length > 0 &&
+        links.map((l) => (
+          <Button key={l.name} variant='contained' color='primary' sx={{ mt: 2 }} onClick={() => window.open(l.url, '_blank', 'noopener,noreferrer')}>
+            {l.name || 'Learn More'}
+          </Button>
+        ))}
+    </Stack>
   </TabPanel>
 )
 

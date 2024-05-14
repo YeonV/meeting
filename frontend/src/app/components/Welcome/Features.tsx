@@ -47,7 +47,7 @@ export default function Features() {
           'Easy management of user sessions, enhancing the security and user experience of your application.',
           'Secured access to username and email via Session.'
         ]}
-        links={['https://next-auth.js.org/']}
+        links={[{ name: 'link', url: 'https://next-auth.js.org/' }]}
       />
       <FeatureContent
         value={value}
@@ -59,7 +59,7 @@ export default function Features() {
           'Broadcasting capabilities, allowing messages to be sent to all connected clients simultaneously.',
           'Client-to-client messaging, facilitating direct communication between clients.'
         ]}
-        links={['https://github.com/apteryxxyz/next-ws']}
+        links={[{ name: 'link', url: 'https://github.com/apteryxxyz/next-ws' }]}
       />
 
       <FeatureContent
@@ -72,7 +72,10 @@ export default function Features() {
           'Themeable designs that can be tailored to match your brand identity.',
           'Responsive layouts for a seamless user experience across devices.'
         ]}
-        links={['https://mui.com/material-ui/all-components/']}
+        links={[
+          { name: 'link', url: 'https://mui.com/material-ui/all-components/' },
+          { name: 'link', url: 'https://mui.com/material-ui/all-components/' }
+        ]}
       />
 
       <FeatureContent
@@ -85,7 +88,7 @@ export default function Features() {
           'Leverages React hooks for a more intuitive development experience.',
           'Supports asynchronous actions and middleware.'
         ]}
-        links={['https://github.com/pmndrs/zustand']}
+        links={[{ name: 'link', url: 'https://github.com/pmndrs/zustand' }]}
       />
     </Box>
   )

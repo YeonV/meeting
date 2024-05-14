@@ -55,7 +55,7 @@ function Swiper() {
                 {Math.abs(activeStep - index) <= 2 ? (
                   <Box sx={{ width: '100%', maxWidth: '800px', height: '800px', display: 'flex', position: 'relative' }}>
                     <Box sx={{ height: '415px', width: '734px', top: 33, left: 34, position: 'relative' }}>
-                      <Image fill objectFit={'cover'} src={step.imgPath} alt={step.label} />
+                      <Image fill src={step.imgPath} alt={step.label} sizes='734px' />
                     </Box>
                   </Box>
                 ) : null}
