@@ -9,7 +9,7 @@ import Calendar from '../Calendar/Calendar'
 import Meetings from '../Meetings/Meetings'
 import Chat from '../Chat/Chat'
 import WsProvider from '../../Providers/WsProvider'
-import Welcome from './Welcome'
+import Welcome from '../Welcome/Welcome'
 
 const Content = () => {
   const { data: session } = useSession()
@@ -25,6 +25,11 @@ const Content = () => {
       {session ? (
         <WsProvider>
           <Box flex={1} display='flex' flexDirection='column' width={'100%'}>
+            {currentTab === 0 && (
+              <div style={{ paddingTop: '2rem' }}>
+                <Welcome notify={notify} />
+              </div>
+            )}
             {currentTab === 1 && (
               <div style={{ paddingTop: '2rem' }}>
                 <Calendar meetings={meetings} notify={notify} />
@@ -43,7 +48,11 @@ const Content = () => {
           </Box>
         </WsProvider>
       ) : (
-        <Welcome notify={notify} />
+        <Box flex={1} display='flex' flexDirection='column' width={'100%'}>
+          <div style={{ paddingTop: '2rem' }}>
+            <Welcome notify={notify} />
+          </div>
+        </Box>
       )}
     </>
   )

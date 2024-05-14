@@ -4,11 +4,7 @@
 
 ---
 
-This is a mono repository containing three projects:
-
-1. **Web**: A Next.js 14 project utilizing the new app router and server actions/components.
-2. **API**: A Strapi 4.22 project that serves as the backend.
-3. **WS**: A WebSocket integration for NextJS.
+## Next.js 14 + Strapi 4.23 + NextWs
 
 ### Techs
 
@@ -22,35 +18,43 @@ This is a mono repository containing three projects:
 [![docs](https://img.shields.io/badge/React-ESlint-blue.svg?logo=ESlint&logoColor=white&label=)](https://eslint.org/)
 
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-
 ### Prerequisites
 
 * NodeJs
 * Docker and Docker compose
 
 
-### Installing
+---
 
-coming soon.
+# Websocket
+
+### Notify
 
 
-## Running the tests
+|         |          |
+|---------|----------|
+|Endpoint | `/api/notify` |
+|Method  | `POST` |
+|Body | `json`: `{ message, variant }`|
+|&nbsp; ↳ &nbsp; message | `string`|
+|&nbsp; ↳ &nbsp; variant | `info` \| `success` \| `warning` \| `error`|
 
-coming soon.
 
-## Deployment
+Example:
+```json
+{
+    "message": "Hello World",
+    "variant": "success"
+}
+```
 
-coming soon.
+### Chat
 
-## Built With
+To test Chat, you need to add and configure at least one Provider in nextAuth and strapi
 
-* NextJS - The web framework used
-* Strapi - Backend API
-* NextWS - WebSocket Integration for NextJS
 
+
+---
 ## Authors
 
 * **YeonV** - *Initial work* - YeonV

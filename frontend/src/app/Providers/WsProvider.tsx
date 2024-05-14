@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { encrypt } from '../actions'
 import useStore from '@/store/useStore'
-import DisplayName from '../components/DisplayName'
+import DisplayName from '../components/Welcome/DisplayName'
 
 const WsProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: session } = useSession()

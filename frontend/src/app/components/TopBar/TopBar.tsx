@@ -15,7 +15,8 @@ import {
   List,
   Login,
   Logout,
-  MessageRounded
+  MessageRounded,
+  Visibility
 } from '@mui/icons-material'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
@@ -30,6 +31,7 @@ import Image from 'next/image'
 import { IMe } from '@/types/meeting/IMe'
 import { useSnackbar } from 'notistack'
 import LocaleSelector from './LocalSelector'
+import useTranslation from '@/lib/utils'
 
 const TopBarBase = () => {
   const { data: session } = useSession()
@@ -48,7 +50,8 @@ const TopBarBase = () => {
   const displayName = useStore((state) => state.displayName)
   const setDisplayName = useStore((state) => state.setDisplayName)
   const setMe = useStore((state) => state.setMe)
-
+  const language = useStore((state) => state.language)
+  const { t } = useTranslation(language)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const handleMenu = (event: MouseEvent<HTMLElement>) => {
@@ -65,7 +68,6 @@ const TopBarBase = () => {
       <AppBar position='fixed' color='inherit'>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Stack direction='row' spacing={2} alignItems={'center'}>
-            <Image src={darkMode ? '/icon.png' : '/icon-with-bg.png'} alt='logo' width={40} height={40} style={{ marginRight: '1rem' }} />
             {session && session.user ? (
               <Tabs
                 value={currentTab}
@@ -73,13 +75,20 @@ const TopBarBase = () => {
                   setCurrentTab(newValue)
                 }}
               >
-                <Tab iconPosition='start' icon={<CalendarToday />} value={1} label='Calendar' />
-                <Tab iconPosition='start' icon={<List />} value={2} label='Meetings' />
-                <Tab iconPosition='start' icon={<Chat />} value={3} label='Chat' />
+                <Tab
+                  iconPosition='start'
+                  icon={<Image src={darkMode ? '/icon.png' : '/icon-with-bg.png'} alt='logo' width={40} height={40} />}
+                  value={0}
+                  label=''
+                />
+                <Tab iconPosition='start' icon={<CalendarToday />} value={1} label={t('Calendar')} />
+                <Tab iconPosition='start' icon={<List />} value={2} label={t('Meetings')} />
+                <Tab iconPosition='start' icon={<Chat />} value={3} label={t('Chat')} />
               </Tabs>
             ) : (
               <>
-                <Typography variant='h6'>Meetings</Typography>
+                <Image src={darkMode ? '/icon.png' : '/icon-with-bg.png'} alt='logo' width={40} height={40} style={{ marginRight: '1rem' }} />
+                <Typography variant='h6'>AppStack</Typography>
               </>
             )}
           </Stack>
@@ -93,9 +102,6 @@ const TopBarBase = () => {
             )}
 
             <LocaleSelector />
-            <IconButton onClick={() => setDarkMode(!darkMode)} color='inherit'>
-              {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
-            </IconButton>
             {session && session.user ? (
               <>
                 <IconButton
@@ -155,9 +161,19 @@ const TopBarBase = () => {
                   <Divider />
                   <MenuItem onClick={() => setDisplayName('')}>
                     <ListItemIcon>
-                      <ChatBubbleOutline />
+                      <Visibility />
                     </ListItemIcon>
-                    <ListItemText>Clear DisplayName</ListItemText>
+                    <ListItemText>{t('Clear DisplayName')}</ListItemText>
+                  </MenuItem>
+                  <MenuItem onClick={() => enqueueSnackbar('Testing snackbar notifications', { variant: 'info' })}>
+                    <ListItemIcon>
+                      <MessageRounded />
+                    </ListItemIcon>
+                    <ListItemText>{t('Test Snackbar')}</ListItemText>
+                  </MenuItem>
+                  <MenuItem onClick={() => setDarkMode(!darkMode)}>
+                    <ListItemIcon>{theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}</ListItemIcon>
+                    <ListItemText>{t('Toggle DarkMode')}</ListItemText>
                   </MenuItem>
                   <Divider />
                   <MenuItem
@@ -176,13 +192,18 @@ const TopBarBase = () => {
                 </Menu>
               </>
             ) : (
-              <IconButton color='inherit' onClick={() => signIn()}>
-                <Login />
-              </IconButton>
+              <>
+                <IconButton onClick={() => setDarkMode(!darkMode)} color='inherit'>
+                  {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+                </IconButton>
+                <IconButton color='inherit' onClick={() => enqueueSnackbar('Testing snackbar notifications', { variant: 'info' })}>
+                  <MessageRounded />
+                </IconButton>
+                <IconButton color='inherit' onClick={() => signIn()}>
+                  <Login />
+                </IconButton>
+              </>
             )}
-            <IconButton color='inherit' onClick={() => enqueueSnackbar('I love hooks', { variant: 'info' })}>
-              <MessageRounded />
-            </IconButton>
           </Stack>
         </Toolbar>
       </AppBar>

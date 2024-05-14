@@ -16,7 +16,8 @@ const LocaleSelector = (): ReactNode => {
         disableUnderline
         value={language}
         onChange={(e) => setLanguage(e.target.value as LanguageCode)}
-        renderValue={(lang) => <Image src={`/${lang === 'en' ? 'us' : lang}.png`} alt={lang} width={30} height={20} />}
+        renderValue={(lang) => lang.toUpperCase()}
+        // renderValue={(lang) => <Image src={`/${lang === 'en' ? 'us' : lang}.png`} alt={lang} width={30} height={20} />}
       >
         {supportedLangs.map((lang) => (
           <MenuItem value={lang} key={lang}>

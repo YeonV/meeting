@@ -15,7 +15,7 @@ const Footer = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position='sticky' sx={{ bottom: 0 }} color='inherit'>
-        <Toolbar sx={{ justifyContent: 'flex-end' }}>
+        <Toolbar sx={{ justifyContent: 'flex-end', minHeight: '40px !important' }}>
           <Typography variant='body2' color='GrayText'>
             {t('Footer text')}
           </Typography>
