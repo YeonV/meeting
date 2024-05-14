@@ -55,7 +55,7 @@ const Welcome = ({ notify }: { notify: () => void }) => {
           Examples
         </Typography>
         <Grid container maxWidth={1200}>
-          <Grid item xs={12} md={6} p={2} textAlign={'left'}>
+          <Grid item xs={12} md={4} p={2} textAlign={'left'}>
             <FeatureContent
               title='Chat'
               subtitle='Realtime client-to-client websocket communication via NextWs'
@@ -64,15 +64,15 @@ const Welcome = ({ notify }: { notify: () => void }) => {
               index={0}
             />
           </Grid>
-          <Grid item xs={12} md={6} p={4}>
+          <Grid item xs={12} md={8}>
             <Swiper />
           </Grid>
         </Grid>
         <Grid container maxWidth={1200} mt={8}>
-          <Grid item xs={12} md={6} p={4}>
+          <Grid item xs={12} md={8}>
             <Swiper />
           </Grid>
-          <Grid item xs={12} md={6} p={2} textAlign={'left'}>
+          <Grid item xs={12} md={4} p={2} pl={6} textAlign={'left'}>
             <FeatureContent
               title='Meetings'
               subtitle='Meeting scheduling and management via Strapi and NextAuth'
