@@ -27,9 +27,10 @@ const LocaleSelector = (): ReactNode => {
             <ListItemText
               sx={{ textTransform: 'capitalize' }}
               primary={
-                lang === 'lk'
-                  ? 'Tamil'
-                  : new Intl.DisplayNames(lang, {
+                // lang === 'lk'
+                //   ? 'Tamil'
+                //   : 
+                  new Intl.DisplayNames(lang, {
                       type: 'language'
                     }).of(lang)
               }
