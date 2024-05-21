@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { encrypt } from '../actions'
 import useStore from '@/store/useStore'
 import DisplayName from '../components/Welcome/DisplayName'
+import WsHandler from './WsHandler'
 
 const WsProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: session } = useSession()
@@ -16,7 +17,7 @@ const WsProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const init = async () => {
       const user = {
-        id: session?.user.email || 'unknown' || session?.user.name?.replace('#', '-') || 'unknown',
+        id: session?.user.email || 'unknown',
         displayName: displayName,
         name: session?.user.name || 'unknown',
         email: session?.user.email || 'unknown'
@@ -40,8 +41,9 @@ const WsProvider = ({ children }: { children: React.ReactNode }) => {
   if (displayName === '') return <DisplayName />
   return encyptedUserId !== 'server' ? (
     <WebSocketProvider url={`${proto}://${host}/api/socket?userId=${encodeURIComponent(encyptedUserId)}`}>
-      {/* <WebSocketProvider url={`ws://localhost:3000/api/socket?userId=${encodeURIComponent(encyptedUserId)}`}> */}
+      <WsHandler>
       {children}
+      </WsHandler>
     </WebSocketProvider>
   ) : (
     <div>loading...</div>

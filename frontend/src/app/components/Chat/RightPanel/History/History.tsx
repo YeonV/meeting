@@ -68,7 +68,7 @@ const History = ({ messages, emojiOpen, group }: { group?: boolean; messages: IM
   let lastDate = null as string | null
 
   return (
-    <List sx={{ flexGrow: 1, maxHeight: `calc(100vh - ${emojiOpen ? 834 : 334}px)`, overflow: 'auto', position: 'relative' }}>
+    <List sx={{ flexGrow: 1, maxHeight: `calc(100vh - ${emojiOpen ? 834 : 315}px)`, overflow: 'auto', position: 'relative', p: 0, pb: 0 }}>
       <HistoryBg />
       {sortedMessages.map(({ author, content, time, reactions, id }, index) => {
         const isMe = author === displayName
@@ -81,17 +81,15 @@ const History = ({ messages, emojiOpen, group }: { group?: boolean; messages: IM
           dateChangeMessage = <SystemMessage content={messageDate} />
         }
 
-        const groupedReactions =
-          reactions &&
-          reactions.length! > 0 &&
-          reactions?.reduce((grouped, r) => {
-            if (!grouped[r.emoji]) {
-              grouped[r.emoji] = { ...r, count: 1 }
-            } else {
-              grouped[r.emoji].count++
-            }
-            return grouped
-          }, {} as Record<string, IReactionWithCount>)
+        const groupedReactions = reactions && reactions.length! > 0 && reactions?.reduce((grouped, r) => {
+          if (!grouped[r.emoji]) {
+            grouped[r.emoji] = { ...r, count: 1 }
+          } else {
+            grouped[r.emoji].count++
+          }
+          return grouped
+        }, {} as Record<string, IReactionWithCount>)
+        
         return (
           <div key={index}>
             {dateChangeMessage}
@@ -109,27 +107,11 @@ const History = ({ messages, emojiOpen, group }: { group?: boolean; messages: IM
                       <>
                         <MessageWrapper minWidth={(reactions?.length || 1) * 30} invert={isMe} {...bindHover(popupState)}>
                           {time && (
-                            <Message
-                              group={group}
-                              invert={isMe}
-                              author={author}
-                              content={content}
-                              time={time}
-                              onClick={() => group && openPrivateChat(author)}
-                            />
+                            <Message group={group} invert={isMe} author={author} content={content} time={time} onClick={() => group && openPrivateChat(author)} />
                           )}
                           {groupedReactions &&
                             Object.values(groupedReactions).map((r: IReactionWithCount, i: number) => (
-                              <Reaction
-                                key={r.author + r.emoji + i}
-                                invert={isMe}
-                                emoji={r.emoji}
-                                i={i}
-                                count={r.count}
-                                messageId={id}
-                                chatId={chatId}
-                                reactions={reactions}
-                              />
+                              <Reaction key={r.author + r.emoji + i} invert={isMe} emoji={r.emoji} i={i} count={r.count} messageId={id} chatId={chatId} reactions={reactions} />
                             ))}
                         </MessageWrapper>
                         <ReactionBar msgId={id} popupState={popupState} bindPopover={bindPopover} invert={isMe} />

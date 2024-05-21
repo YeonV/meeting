@@ -41,7 +41,7 @@ const messages = {
     'welcome-title-overline': 'Realtime',
     'welcome-title': 'AppStack',
     'welcome-description':
-      'A full-stack app with Next.js v14.1.4 + AppRouter, realtime communication via NextWs, backend via Strapi v4.24.1 and everything dockerized.',
+      'A full-stack app with Next.js v14.2.3 + AppRouter, realtime communication via NextWs, backend via Strapi v4.24.2 and everything dockerized.',
     'welcome-sign-in': 'Sign in to get started',
     'welcome-signed-in': 'Successfully signed in',
     'Test Snackbar': 'Test Snackbar',
@@ -86,7 +86,7 @@ const messages = {
     'welcome-title-overline': 'Echtzeit',
     'welcome-title': 'AppStack',
     'welcome-description':
-      'Eine Full-Stack-App mit Next.js v14.1.4 + AppRouter, Echtzeitkommunikation über NextWs, Backend über Strapi v4.24.1 und alles dockerisiert.',
+      'Eine Full-Stack-App mit Next.js v14.2.3 + AppRouter, Echtzeitkommunikation über NextWs, Backend über Strapi v4.24.1 und alles dockerisiert.',
     'welcome-sign-in': 'Anmelden um zu beginnen',
     'welcome-signed-in': 'Erfolgreich angemeldet',
     'Test Snackbar': 'Snackbar testen',

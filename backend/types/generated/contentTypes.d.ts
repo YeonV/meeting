@@ -368,20 +368,21 @@ export interface ApiMeetingMeeting extends Schema.CollectionType {
     singularName: 'meeting';
     pluralName: 'meetings';
     displayName: 'Meeting';
+    description: '';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
-    title: Attribute.String;
-    description: Attribute.Text;
     Start: Attribute.DateTime;
     End: Attribute.DateTime;
-    users_permissions_user: Attribute.Relation<
+    user: Attribute.Relation<
       'api::meeting.meeting',
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    title: Attribute.String;
+    description: Attribute.Text;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

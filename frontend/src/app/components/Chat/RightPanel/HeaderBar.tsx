@@ -4,15 +4,12 @@ import useStore from '@/store/useStore'
 import { ClearAll, MoreVert, Search } from '@mui/icons-material'
 import { Typography, useTheme, Stack, Toolbar, AppBar, Avatar, IconButton, Icon, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material'
 import moment from 'moment'
-// import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import useTranslation from '@/lib/utils'
 import DialogDeleteChat from '../../Dialogs/DialogDeleteChat'
 
-const HeaderBar = ({ messages, rounded }: { messages: { message: string; timestamp: number }[]; rounded?: boolean }) => {
+const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
   const theme = useTheme()
-  // const { data: session } = useSession()
-  // const t = useTranslations('HeaderBar')
   const language = useStore((state) => state.language)
   const { t } = useTranslation(language)
 
@@ -20,16 +17,17 @@ const HeaderBar = ({ messages, rounded }: { messages: { message: string; timesta
   const displayName = useStore((state) => state.displayName)
   const activeChat = useStore((state) => state.activeChat)
   const chat = chats.find((c) => c.id === activeChat)
+  const msg = (chat?.messages)?.[(chat?.messages).length - 1]
   const otherUser = chat?.name
     .split(',')
     .filter((m) => m !== 'General' && m !== displayName)
     .join(',')
-  const timeFromNow = moment(messages[0]?.timestamp).fromNow()
-  const formattedDate = moment(messages[0]?.timestamp).format('DD.MM.YYYY, hh:mm')
+  const timeFromNow = moment(msg?.time).fromNow()
+  const formattedDate = moment(msg?.time).format('DD.MM.YYYY, hh:mm')
   moment.locale(language)
-  const displayTime = moment().diff(moment(messages[0]?.timestamp), 'days') <= 2 ? timeFromNow : formattedDate
+  const displayTime = moment().diff(moment(msg?.time), 'days') <= 2 ? timeFromNow : formattedDate
 
-  const lastSender = messages && messages.length ? JSON.parse(messages[messages.length - 1]?.message).author : ''
+  const lastSender = msg?.author || ''
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const menuOpen = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {

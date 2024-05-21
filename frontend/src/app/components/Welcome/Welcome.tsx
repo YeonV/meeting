@@ -1,25 +1,33 @@
 'use client'
 
-import { Box, Typography, Grid, Stack } from '@mui/material'
+import { Box, Typography, Grid, Stack, Icon, IconButton, Button, useTheme } from '@mui/material'
+import { useCopyToClipboard } from 'usehooks-ts'
 import { useSession } from 'next-auth/react'
 import useTranslation from '@/lib/utils'
 import useStore from '@/store/useStore'
 import Logos from './Logos/Logos'
 import SignInButton from './SignInButton'
-import MuiLogo from './Logos/MuiLogo'
 import Image from 'next/image'
-import Logo from './Logos/Logo'
 import NotifyDoc from './NotifyDoc'
 import Features from './Features'
 import Swiper from './Swiper'
 import FeatureContent from './FeaturesContent'
+import { CopyAll } from '@mui/icons-material'
+import { useSnackbar } from 'notistack'
 
 const Welcome = ({ notify }: { notify: () => void }) => {
   const dev = useStore((state) => state.dev)
-  const darkMode = useStore((state) => state.darkMode)
   const language = useStore((state) => state.language)
   const { t } = useTranslation(language)
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+  const theme = useTheme()
   const { data: session } = useSession()
+  const [_copiedText, copy] = useCopyToClipboard()
+  const c = () => {
+    copy('npx create-nextws@latest')
+    enqueueSnackbar('Copied to clipboard', { variant: 'success' })
+  }
 
   return (
     <Box flex={1} display='flex' justifyContent='center' alignItems='center' flexDirection={'column'}>
@@ -45,8 +53,14 @@ const Welcome = ({ notify }: { notify: () => void }) => {
             <Typography variant='h2' mt={0} mb={6}>
               Getting Started
             </Typography>
-            <Typography variant='h4' color={'GrayText'} mb={16} mt={2}>
-              <code style={{ backgroundColor: '#000', padding: '1.4rem 4rem', borderRadius: 20 }}>{`npx create-nextws@latest`}</code>
+            <Typography variant='h4' color={'GrayText'} mb={16} mt={2} sx={{ '&:hover': { color: '#ddd'}}}>
+              <code onClick={c} style={{ backgroundColor: '#000', padding: '1.4rem 4rem', borderRadius: 20, position: 'relative', cursor: 'pointer' }}>
+                {`npx create-nextws@latest`}
+                <IconButton color='inherit' size='small' style={{ position: 'absolute', right: 12, top: 26 }}>
+                  <CopyAll color='inherit' />
+                </IconButton>
+              </code>
+
             </Typography>
           </>
         )}
