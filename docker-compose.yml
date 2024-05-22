@@ -112,9 +112,10 @@ services:
     image: adminer
     restart: unless-stopped
     ports:
-      - '${STRAPI_ADMIN_PORT}:8080'
+      - '${STRAPI_ADMIN_PORT}:${STRAPI_ADMIN_PORT}'
     environment:
       - ADMINER_DEFAULT_SERVER=yzstrapiDB
+      - PORT=${STRAPI_ADMIN_PORT}
     depends_on:
       - yzstrapiDB
 
