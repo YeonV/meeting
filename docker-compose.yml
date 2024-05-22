@@ -69,6 +69,7 @@ services:
       NODE_ENV: ${NODE_ENV}
       VIRTUAL_HOST: ${STRAPI_SUB_DOMAIN}.${BASE_DOMAIN}
       VIRTUAL_PORT: ${STRAPI_PORT}
+      PORT: ${STRAPI_PORT}
       LETSENCRYPT_HOST: ${STRAPI_SUB_DOMAIN}.${BASE_DOMAIN}
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
     volumes:
@@ -84,7 +85,7 @@ services:
       #WIN - ./backend/config/plugins.ts:/opt/app/config/plugins.ts
       #WIN - ./backend/tsconfig.json:/opt/app/tsconfig.json
     ports:
-      - '${STRAPI_PORT}:1337'
+      - '${STRAPI_PORT}:${STRAPI_PORT}'
     depends_on:
       - yzstrapiDB
 
