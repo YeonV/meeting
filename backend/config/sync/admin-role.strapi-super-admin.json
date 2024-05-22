@@ -9,11 +9,11 @@
       "subject": "api::meeting.meeting",
       "properties": {
         "fields": [
-          "Title",
-          "Description",
           "Start",
           "End",
-          "user"
+          "user",
+          "title",
+          "description"
         ]
       },
       "conditions": []
@@ -38,11 +38,11 @@
       "subject": "api::meeting.meeting",
       "properties": {
         "fields": [
-          "Title",
-          "Description",
           "Start",
           "End",
-          "user"
+          "user",
+          "title",
+          "description"
         ]
       },
       "conditions": []
@@ -53,11 +53,11 @@
       "subject": "api::meeting.meeting",
       "properties": {
         "fields": [
-          "Title",
-          "Description",
           "Start",
           "End",
-          "user"
+          "user",
+          "title",
+          "description"
         ]
       },
       "conditions": []

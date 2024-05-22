@@ -42,7 +42,7 @@ const messages = {
     'welcome-title': 'AppStack',
     'welcome-description':
       'A full-stack app with Next.js v14.2.3 + AppRouter, realtime communication via NextWs, backend via Strapi v4.24.2 and everything dockerized.',
-    'welcome-sign-in': 'Sign in to get started',
+    'welcome-sign-in': 'Sign in to explore',
     'welcome-signed-in': 'Successfully signed in',
     'Test Snackbar': 'Test Snackbar',
     'Toggle DarkMode': 'Toggle DarkMode'

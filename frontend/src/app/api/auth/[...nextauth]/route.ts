@@ -1,57 +1,51 @@
 import { StrapiErrorT } from '@/types/strapi/StrapiError'
 import { StrapiLoginResponseT } from '@/types/strapi/User'
 import NextAuth, { Account, Session, SessionStrategy, User } from 'next-auth'
-import { JWT } from 'next-auth/jwt'
-import BattleNet from 'next-auth/providers/battlenet'
-import Discord from 'next-auth/providers/discord'
-import Github from 'next-auth/providers/github'
-import Google from 'next-auth/providers/google'
-import Spotify from 'next-auth/providers/spotify'
-import Twitter from 'next-auth/providers/twitter'
+import GitHubProvider from 'next-auth/providers/github'
+import GoogleProvider from 'next-auth/providers/google'
+import SpotifyProvider from 'next-auth/providers/spotify'
+import BattleNetProvider from 'next-auth/providers/battlenet'
+import TwitterProvider from 'next-auth/providers/twitter'
+import DiscordProvider from 'next-auth/providers/discord'
+
+interface Provider {
+  provider: any;
+  id: string;
+  secret: string;
+  options?: Record<string, unknown>;
+}
+
+const providers: Provider[] = [
+  { provider: GitHubProvider, id: 'GITHUB_ID', secret: 'GITHUB_SECRET' },
+  { provider: GoogleProvider, id: 'GOOGLE_CLIENT_ID', secret: 'GOOGLE_CLIENT_SECRET' },
+  { provider: SpotifyProvider, id: 'SPOTIFY_CLIENT_ID', secret: 'SPOTIFY_CLIENT_SECRET' },
+  { provider: BattleNetProvider, id: 'BATTLENET_CLIENT_ID', secret: 'BATTLENET_CLIENT_SECRET', options: { region: 'eu' } },
+  { provider: TwitterProvider, id: 'TWITTER_ID', secret: 'TWITTER_SECRET', options: { version: '2.0' } },
+  { provider: DiscordProvider, id: 'DISCORD_CLIENT_ID', secret: 'DISCORD_CLIENT_SECRET' }
+  // ...add more providers here
+]
+
+function isEnabled(clientId: string | undefined, clientSecret: string | undefined): boolean {
+  return !!(clientId !== '' && clientId && !clientId.startsWith('GET_YOUR_OWN') && clientSecret !== '' && clientSecret && !clientSecret.startsWith('GET_YOUR_OWN'))
+}
+
+const enabledProviders = providers
+  .filter(provider => isEnabled(process.env[provider.id], process.env[provider.secret]))
+  .map(provider => {
+    return provider.provider({
+      clientId: process.env[provider.id],
+      clientSecret: process.env[provider.secret],
+      ...provider.options
+    })
+  })
 
 const handler = NextAuth({
-  // Configure one or more authentication providers
-  providers: [
-    Github({
-      clientId: process.env.GITHUB_ID || '',
-      clientSecret: process.env.GITHUB_SECRET || ''
-    }),
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || ''
-    }),
-    Spotify({
-      clientId: process.env.SPOTIFY_CLIENT_ID || '',
-      clientSecret: process.env.SPOTIFY_CLIENT_SECRET || ''
-    }),
-    BattleNet({
-      clientId: process.env.BATTLENET_CLIENT_ID || '',
-      clientSecret: process.env.BATTLENET_CLIENT_SECRET || '',
-      issuer: 'https://eu.battle.net/oauth'
-    }),
-    Twitter({
-      clientId: process.env.TWITTER_ID || '',
-      clientSecret: process.env.TWITTER_SECRET || '',
-      version: '2.0' // opt-in to Twitter OAuth 2.0
-    }),
-    Discord({
-      clientId: process.env.DISCORD_CLIENT_ID || '',
-      clientSecret: process.env.DISCORD_CLIENT_SECRET || ''
-    })
-    // ...add more providers here
-  ],
+  providers: enabledProviders,
   session: {
     strategy: 'jwt' as SessionStrategy
   },
   callbacks: {
     async jwt({ token, trigger, account, user, session }: { token: any; trigger?: string; account: Account | null; user: User; session?: Session }) {
-      // console.log('jwt callback', {
-      //   token,
-      //   trigger,
-      //   account,
-      //   user,
-      //   session,
-      // });
 
       // change username update
       if (trigger === 'update' && session?.username) {

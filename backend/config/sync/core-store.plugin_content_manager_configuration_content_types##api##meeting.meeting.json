@@ -6,8 +6,8 @@
       "filterable": true,
       "searchable": true,
       "pageSize": 10,
-      "mainField": "Title",
-      "defaultSortBy": "Title",
+      "mainField": "title",
+      "defaultSortBy": "title",
       "defaultSortOrder": "ASC"
     },
     "metadatas": {
@@ -15,34 +15,6 @@
         "edit": {},
         "list": {
           "label": "id",
-          "searchable": true,
-          "sortable": true
-        }
-      },
-      "Title": {
-        "edit": {
-          "label": "Title",
-          "description": "",
-          "placeholder": "",
-          "visible": true,
-          "editable": true
-        },
-        "list": {
-          "label": "Title",
-          "searchable": true,
-          "sortable": true
-        }
-      },
-      "Description": {
-        "edit": {
-          "label": "Description",
-          "description": "",
-          "placeholder": "",
-          "visible": true,
-          "editable": true
-        },
-        "list": {
-          "label": "Description",
           "searchable": true,
           "sortable": true
         }
@@ -86,6 +58,34 @@
         },
         "list": {
           "label": "user",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "title": {
+        "edit": {
+          "label": "title",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "title",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "description": {
+        "edit": {
+          "label": "description",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "description",
           "searchable": true,
           "sortable": true
         }
@@ -152,21 +152,11 @@
     "layouts": {
       "list": [
         "id",
-        "Title",
-        "Description",
-        "Start"
+        "Start",
+        "title",
+        "description"
       ],
       "edit": [
-        [
-          {
-            "name": "Title",
-            "size": 6
-          },
-          {
-            "name": "Description",
-            "size": 6
-          }
-        ],
         [
           {
             "name": "Start",
@@ -180,6 +170,16 @@
         [
           {
             "name": "user",
+            "size": 6
+          },
+          {
+            "name": "title",
+            "size": 6
+          }
+        ],
+        [
+          {
+            "name": "description",
             "size": 6
           }
         ]
