@@ -81,7 +81,8 @@ services:
       - ./backend/api:/opt/app/src/api
       - ./backend/types:/opt/app/types
       - ./backend/src/extensions/users-permissions/content-types/user:/opt/app/src/extensions/users-permissions/content-types/user
-      - ${PWD}/backend/config/plugins.ts:/opt/app/config/plugins.ts
+      - ./backend/src/admin/extensions:/opt/app/src/admin/extensions
+      - ${CURRENT_DIR}/backend/config/plugins.ts:/opt/app/config/plugins.ts
       #MAC - ${PWD}/backend/tsconfig.json:/opt/app/tsconfig.json
       #WIN - ./backend/config/plugins.ts:/opt/app/config/plugins.ts
       #WIN - ./backend/tsconfig.json:/opt/app/tsconfig.json
