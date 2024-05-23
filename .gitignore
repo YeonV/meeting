@@ -4,3 +4,6 @@ backend/data
 # frontend
 frontend/.nextdev
 .DS_Store
+.env.backup
+backend/config/sync/core-store.plugin_migrations_version.json
+backend/migrations/v99_reset_to_90.js

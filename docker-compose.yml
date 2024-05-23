@@ -75,17 +75,16 @@ services:
       FLAG_PROMOTE_EE: false
     volumes:
       - ./.env:/opt/app/.env
-      - ./backend/public:/opt/app/public
-      - ./backend/config/sync:/opt/app/config/sync
-      - ./backend/migrations:/opt/app/migrations
-      - ./backend/api:/opt/app/src/api
-      - ./backend/types:/opt/app/types
-      - ./backend/src/extensions/users-permissions/content-types/user:/opt/app/src/extensions/users-permissions/content-types/user
-      - ./backend/src/admin/extensions:/opt/app/src/admin/extensions
-      - ${CURRENT_DIR}/backend/config/plugins.ts:/opt/app/config/plugins.ts
-      #MAC - ${PWD}/backend/tsconfig.json:/opt/app/tsconfig.json
-      #WIN - ./backend/config/plugins.ts:/opt/app/config/plugins.ts
-      #WIN - ./backend/tsconfig.json:/opt/app/tsconfig.json
+      - ./backend/mounts/public:/opt/app/public
+      - ./backend/mounts/config/sync:/opt/app/config/sync
+      - ./backend/mounts/migrations:/opt/app/migrations
+      - ./backend/mounts/api:/opt/app/src/api
+      - ./backend/mounts/types:/opt/app/types
+      - ./backend/mounts/src/extensions/users-permissions/content-types/user:/opt/app/src/extensions/users-permissions/content-types/user
+      - ${CURRENT_DIR}/backend/mounts/config/plugins.ts:/opt/app/config/plugins.ts
+      - ${CURRENT_DIR}/backend/mounts/favicon.png:/opt/app/src/admin/extensions/favicon.png
+      - ${CURRENT_DIR}/backend/mounts/logo.png:/opt/app/src/admin/extensions/logo.png
+
     ports:
       - '${STRAPI_PORT}:${STRAPI_PORT}'
     depends_on:
