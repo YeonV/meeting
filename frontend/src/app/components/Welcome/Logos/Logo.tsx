@@ -36,7 +36,7 @@ const Logo = ({ name, text }: { name: string; text?: boolean }) => {
       case 'NextWs':
         return (
           <>
-            <Image src='/Logos/NextWs.png' alt='nextws' width={30} height={30} style={{ filter: darkMode ? 'invert(1)' : 'grayscale(1)' }} />
+            <Image src='/Logos/nextws.png' alt='nextws' width={30} height={30} style={{ filter: darkMode ? 'invert(1)' : 'grayscale(1)' }} />
             {text && <Typography variant='h5'>NextWs</Typography>}
           </>
         )
