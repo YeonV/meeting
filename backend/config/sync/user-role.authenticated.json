@@ -28,6 +28,9 @@
       "action": "plugin::users-permissions.role.findOne"
     },
     {
+      "action": "plugin::users-permissions.user.find"
+    },
+    {
       "action": "plugin::users-permissions.user.findOne"
     },
     {

@@ -58,7 +58,7 @@ const handler = NextAuth({
       }
 
       if (account) {
-        if (account.provider === 'google') {
+        if (account.provider === 'google' || account.provider === 'github' || account.provider === 'spotify' || account.provider === 'twitter' || account.provider === 'discord') {
           // we now know we are doing a sign in using GoogleProvider
           try {
             const strapiResponse = await fetch(

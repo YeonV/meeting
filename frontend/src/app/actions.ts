@@ -67,7 +67,7 @@ export const addMeeting = async ({
   start: string
   end: string
   strapiToken: string
-  user: number
+  user: number | string
   title: string
   description: string
 }) => {
