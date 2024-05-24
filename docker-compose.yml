@@ -74,7 +74,7 @@ services:
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
       FLAG_PROMOTE_EE: false
     volumes:
-      - ./.env:/opt/app/.env
+      - ${CURRENT_DIR}/.env:/opt/app/.env
       - ./backend/mounts/public:/opt/app/public
       - ./backend/mounts/config/sync:/opt/app/config/sync
       - ./backend/mounts/migrations:/opt/app/migrations

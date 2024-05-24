@@ -1,31 +1,31 @@
 {
-    "extends": "@strapi/typescript-utils/tsconfigs/server",
-    "compilerOptions": {
-      "outDir": "dist",
-      "rootDir": ".",
-      "skipLibCheck": true, // Skip type checking of declaration files
-      "strict": false, // Disable strict type checking
-      "allowJs": true, // Allow JavaScript files to be compiled
-      "checkJs": false, // Disable checking JavaScript files
-      "noImplicitAny": false,
-      "noImplicitThis": false
-    },
-    "include": [
-      "./",
-      "./**/*.ts",
-      "./**/*.js",
-      "src/**/*.json",
-    ],
-    "exclude": [
-      "node_modules/",
-      "build/",
-      "dist/",
-      ".cache/",
-      ".tmp/",
-      "src/admin/",
-      "**/*.test.ts",
-      "src/plugins/**",
-      "types/generated/**"
-    ]
-  }
+  "extends": "@strapi/typescript-utils/tsconfigs/server",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "strict": false, // Disable strict type checking
+    "allowJs": true, // Allow JavaScript files to be compiled
+    "checkJs": false, // Disable checking JavaScript files
+    "noImplicitAny": false,
+    "noImplicitThis": false
+  },
+  "include": [
+    "./",
+    "./**/*.ts",
+    "./**/*.js",
+    "src/**/*.json",
+  ],
+  "exclude": [
+    "node_modules/",
+    "build/",
+    "dist/",
+    ".cache/",
+    ".tmp/",
+    "src/admin/",
+    "**/*.test.ts",
+    "src/plugins/**",
+    "types/generated/**"
+  ]
+}
   
