@@ -3,7 +3,7 @@ export type StrapiUserT = {
   username: string
   email: string
   blocked: boolean
-  provider: 'local' | 'google'
+  provider: 'local' | 'google' | 'github' | 'spotify' | 'twitter' | 'discord'
   role?: string
 }
 

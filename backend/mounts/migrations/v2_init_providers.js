@@ -10,7 +10,7 @@ module.exports = async () => {
             key: process.env.GITHUB_ID || '',
             secret: process.env.GITHUB_SECRET || '',
             // icon: "github",
-            // callback: `${baseUrl}/github/callback`,
+            callback: `${process.env.NEXT_PUBLIC_NEXTJS_URL}/api/auth/github/callback`,
             // scope: ["user", "user:email"],
             // redirect_uri: "/auth/github/callback",
             // redirectUri: `${process.env.NEXT_PUBLIC_NEXTJS_URL}/api/connect/github/callback`
