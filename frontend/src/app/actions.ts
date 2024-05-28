@@ -1,7 +1,7 @@
 'use server'
 
 import api from '@/lib/Strapi'
-import CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js'
 
 export async function getMe(strapiToken: string) {
   'use server'
@@ -12,32 +12,47 @@ export async function getMe(strapiToken: string) {
 export async function getOtherMeetings(strapiToken: string) {
   'use server'
   const me = await getMe(strapiToken)
-  const otherMeetings = await api(`/meetings?populate=user.username&filters[user][username][$nei]=${me.username}`, strapiToken)
+  const otherMeetings = await api(
+    `/meetings?populate=user.username&filters[user][username][$nei]=${me.username}`,
+    strapiToken
+  )
   return otherMeetings.data
 }
 
 export async function getAllMeetings(strapiToken: string) {
   'use server'
   const me = await getMe(strapiToken)
-  const otherMeetings = await api(`/meetings?populate=user.username&filters[user][username][$nei]=${me.username}`, strapiToken)
+  const otherMeetings = await api(
+    `/meetings?populate=user.username&filters[user][username][$nei]=${me.username}`,
+    strapiToken
+  )
   return otherMeetings.data
 }
 
 export async function getMeetings(strapiToken: string) {
   'use server'
-  const { meetings } = await api('/users/me?populate=meetings.Start', strapiToken)
+  const { meetings } = await api(
+    '/users/me?populate=meetings.Start',
+    strapiToken
+  )
   if (!meetings) return []
   return meetings
 }
 export async function encrypt(data: any) {
   'use server'
-  return CryptoJS.AES.encrypt(JSON.stringify(data), process.env.NEXT_PUBLIC_CRYPTO_KEY || 'yz').toString();
+  return CryptoJS.AES.encrypt(
+    JSON.stringify(data),
+    process.env.NEXT_PUBLIC_CRYPTO_KEY || 'yz'
+  ).toString()
 }
 
 export async function decrypt(data: string) {
   'use server'
-  const bytes = CryptoJS.AES.decrypt(data, process.env.NEXT_PUBLIC_CRYPTO_KEY || 'yz')
-  return bytes.toString(CryptoJS.enc.Utf8);  
+  const bytes = CryptoJS.AES.decrypt(
+    data,
+    process.env.NEXT_PUBLIC_CRYPTO_KEY || 'yz'
+  )
+  return bytes.toString(CryptoJS.enc.Utf8)
 }
 
 // export async function encrypt(data: any) {
@@ -56,13 +71,15 @@ export async function decrypt(data: string) {
 //   return decrypted.toString(CryptoJS.enc.Utf8);
 // }
 
+const url = `${process.env.NEXT_PUBLIC_NEXTJS_URL_DOCKER}/api/meeting`
+
 export const addMeeting = async ({
   start,
   end,
   strapiToken,
   user,
   title,
-  description
+  description,
 }: {
   start: string
   end: string
@@ -77,15 +94,15 @@ export const addMeeting = async ({
     end,
     user,
     title,
-    description
+    description,
   }
 
-  const response = await fetch(process.env.NEXT_PUBLIC_NEXTJS_URL + '/api/meeting', {
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(meetingData)
+    body: JSON.stringify(meetingData),
   })
 
   if (response.ok) {
@@ -94,18 +111,24 @@ export const addMeeting = async ({
   return false
 }
 
-export const deleteMeeting = async ({ id, strapiToken }: { id: number; strapiToken: string }) => {
+export const deleteMeeting = async ({
+  id,
+  strapiToken,
+}: {
+  id: number
+  strapiToken: string
+}) => {
   const meetingData = {
     strapiToken,
-    id
+    id,
   }
 
-  const response = await fetch(process.env.NEXT_PUBLIC_NEXTJS_URL + '/api/meeting', {
+  const response = await fetch(url, {
     method: 'DELETE',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(meetingData)
+    body: JSON.stringify(meetingData),
   })
 
   if (response.ok) {
@@ -113,19 +136,21 @@ export const deleteMeeting = async ({ id, strapiToken }: { id: number; strapiTok
   }
 }
 
-export const updateMeeting = async ({ id, strapiToken, description }: { id: number; strapiToken: string; description: string }) => {
-  const meetingData = {
-    strapiToken,
-    id,
-    description
-  }
+export const updateMeeting = async ({
+  id,
+  strapiToken,
+  description,
+}: {
+  id: number
+  strapiToken: string
+  description: string
+}) => {
+  const meetingData = { strapiToken, id, description }
 
-  const response = await fetch(process.env.NEXT_PUBLIC_NEXTJS_URL + '/api/meeting', {
+  const response = await fetch(url, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(meetingData)
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(meetingData),
   })
 
   if (response.ok) {

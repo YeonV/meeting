@@ -22,6 +22,9 @@ export async function POST(req: NextRequest, res: NextApiResponse<any>) {
     const message = JSON.parse(data)
 
     console.log('POST request received', message)
+    clients.forEach((currentClient) => {
+      currentClient.send(JSON.stringify({ type: 'notify', content: message.event, variant: 'info' }))
+    })
     return new Response('POST request received', {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
