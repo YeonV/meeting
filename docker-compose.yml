@@ -21,6 +21,7 @@ services:
       - "${NEXT_PORT}:${NEXT_PORT}"
     depends_on:
       - yzstrapiDB
+      - yzstrapiweb
 
   yznextdev:
     image: yznextdev
@@ -50,6 +51,7 @@ services:
       - "${NEXT_DEV_PORT}:${NEXT_DEV_PORT}"
     depends_on:
       - yzstrapiDB
+      - yzstrapiweb
 
  
   yzstrapiweb:
