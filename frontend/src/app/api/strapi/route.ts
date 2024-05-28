@@ -6,6 +6,16 @@ import { Readable, Writable } from 'stream'
 
 export async function POST(req: NextRequest, res: NextApiResponse<any>) {
   if (req.method === 'POST') {
+    console.log('Request Headers:', req.headers)
+    console.log('YZ TOKEN STRAPI NEXTJS!!:', req.headers.get('X-Strapi-NextJS'))
+    if (req.headers.get('X-Strapi-NextJS') !== process.env.STRAPI_NEXTJS_SECRET) {
+      console.log('Unauthorized')
+      // return new Response('Unauthorized', {
+      //   status: 401
+      // })
+    } else {
+      console.log('Authorized')
+    }
     const webSocket = (global as any)?.['wsServer'] as WebSocketServer
     const clients: Array<WebSocket> = Array.from((webSocket?.clients || {}) as any)
     // console.log('clients:', clients)
