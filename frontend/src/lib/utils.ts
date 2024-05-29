@@ -105,7 +105,7 @@ export const calculateEndSlot = (startSlot: string, slotsToAdd: number, minutesP
 }
 
 export const addToCalendar = async (meeting: IMeeting) => {
-  const res = await fetch(process.env.NEXT_PUBLIC_NEXTJS_URL + '/api/calendar', {
+  const res = await fetch('/api/calendar', {
     method: 'POST',
     body: JSON.stringify(meeting),
     headers: {
