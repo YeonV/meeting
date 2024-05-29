@@ -4,9 +4,14 @@ import { Chat, ChatBubble, ChatOutlined, Mail, Person, QuestionAnswer, Visibilit
 import { Avatar, Box, Divider, Icon, Paper, Stack, Typography, useTheme } from '@mui/material'
 import { useSession } from 'next-auth/react'
 
-const Row = ({ icon = <Person />, name = 'Yeon' }) => {
+export const Row = ({ icon = <Person />, name = 'Yeon', caption = '' }) => {
   return (
     <Stack direction={'row'} spacing={2} alignItems={'center'} mb={2}>
+      {caption && (
+        <Typography textAlign={'right'} sx={{ fontSize: 20, fontWeight: 200, minWidth: 200 }}>
+          {caption}
+        </Typography>
+      )}
       {icon}
       <Typography sx={{ fontSize: 20, fontWeight: 200 }}>{name}</Typography>
     </Stack>

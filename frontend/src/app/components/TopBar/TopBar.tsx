@@ -2,14 +2,13 @@
 
 import { useState, MouseEvent } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
-import { Avatar, Chip, Divider, Icon, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
+import { Avatar, Divider, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
 import {
+  AdminPanelSettings,
   Brightness4,
   Brightness7,
   CalendarToday,
   Chat,
-  ChatBubble,
-  ChatBubbleOutline,
   DeveloperBoard,
   Edit,
   List,
@@ -84,6 +83,9 @@ const TopBarBase = () => {
                 <Tab iconPosition='start' icon={<CalendarToday />} value={1} label={t('Calendar')} />
                 <Tab iconPosition='start' icon={<List />} value={2} label={t('Meetings')} />
                 <Tab iconPosition='start' icon={<Chat />} value={3} label={t('Chat')} />
+                {(me.role?.type === 'privileged' || me.role?.type === 'administrator') && (
+                  <Tab iconPosition='start' icon={<AdminPanelSettings />} value={4} label={t('Admin')} />
+                )}
               </Tabs>
             ) : (
               <>
@@ -92,7 +94,6 @@ const TopBarBase = () => {
               </>
             )}
           </Stack>
-          {me.role?.type === 'employee' && <Chip label='Admin' color='primary' variant='outlined' sx={{ mr: 2 }} />}
 
           <Stack direction='row' spacing={2} alignItems={'center'}>
             {dev && (
@@ -132,11 +133,11 @@ const TopBarBase = () => {
                   <MenuItem onClick={handleClose}>
                     {session.user.image ? (
                       <ListItemIcon>
-                        <Avatar src={session.user.image} sx={{ mr: 2, width: 50, height: 50 }} />
+                        <Avatar src={session.user.image} sx={{ mr: 2, width: 80, height: 80 }} />
                       </ListItemIcon>
                     ) : (
                       <ListItemIcon>
-                        <AccountCircle sx={{ fontSize: 50, mr: 2 }} />
+                        <AccountCircle sx={{ fontSize: 80, mr: 2 }} />
                       </ListItemIcon>
                     )}
                     <Stack direction='column'>
@@ -156,6 +157,19 @@ const TopBarBase = () => {
                       <Typography variant='caption' color={'InactiveCaptionText'}>
                         {session.user.name}
                       </Typography>
+                      {(me.role?.type === 'privileged' || me.role?.type === 'administrator') && (
+                        <Typography
+                          color={'InactiveCaptionText'}
+                          sx={{
+                            // color: 'primary.main',
+                            fontSize: '0.75rem',
+                            letterSpacing: '0.1em'
+                          }}
+                        >
+                          {/** capitalize: */}
+                          {me.role?.type.toLocaleUpperCase()}
+                        </Typography>
+                      )}
                     </Stack>
                   </MenuItem>
                   <Divider />

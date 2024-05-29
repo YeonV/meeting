@@ -10,6 +10,7 @@ import Meetings from '../Meetings/Meetings'
 import Chat from '../Chat/Chat'
 import WsProvider from '../../Providers/WsProvider'
 import Welcome from '../Welcome/Welcome'
+import Admin from '../Admin/Admin'
 
 const Content = () => {
   const { data: session } = useSession()
@@ -43,6 +44,11 @@ const Content = () => {
             {currentTab === 3 && (
               <div style={{ paddingTop: '2rem', display: 'flex', flexGrow: 1 }}>
                 <Chat />
+              </div>
+            )}
+            {currentTab === 4 && (
+              <div style={{ paddingTop: '2rem', display: 'flex', flexGrow: 1 }}>
+                <Admin />
               </div>
             )}
           </Box>

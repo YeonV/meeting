@@ -28,7 +28,7 @@ const Session = () => {
   useEffect(() => {
     // console.log(me, session)
     if (!session) return
-    if (session && session.strapiToken && me && me.role.type === 'employee') {
+    if (session && session.strapiToken && me && (me.role?.type === 'privileged' || me.role?.type === 'administrator')) {
       fetchAllMeetings(session.strapiToken)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

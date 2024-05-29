@@ -6,6 +6,7 @@ const messages = {
     'Chat': 'Chat',
     'Calendar': 'Calendar',
     'Meetings': 'Meetings',
+    'Meeting': 'Meeting',
     'Chats': 'Chats',
     'Welcome': 'Welcome',
     'Chat started!': 'Chat started!',
@@ -45,12 +46,14 @@ const messages = {
     'welcome-sign-in': 'Sign in to explore',
     'welcome-signed-in': 'Successfully signed in',
     'Test Snackbar': 'Test Snackbar',
-    'Toggle DarkMode': 'Toggle DarkMode'
+    'Toggle DarkMode': 'Toggle DarkMode',
+    'Admin': 'Admin'
   },
   de: {
     'Chat': 'Chat',
     'Calendar': 'Kalender',
     'Meetings': 'Termine',
+    'Meeting': 'Termin',
     'Chats': 'Chats',
     'Welcome': 'Willkommen',
     'Chat started!': 'Chat gestartet!',
@@ -90,7 +93,8 @@ const messages = {
     'welcome-sign-in': 'Anmelden um zu beginnen',
     'welcome-signed-in': 'Erfolgreich angemeldet',
     'Test Snackbar': 'Snackbar testen',
-    'Toggle DarkMode': 'DarkMode umschalten'
+    'Toggle DarkMode': 'DarkMode umschalten',
+    'Admin': 'Admin'
   }
   // fr: {
   //   'Chat': 'Chat',
