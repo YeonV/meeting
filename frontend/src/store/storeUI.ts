@@ -13,9 +13,10 @@ const storeUI = (set: any) => ({
       'ui/setLanguage'
     ),
   dialogs: {
-    deleteChat: false
+    deleteChat: false,
+    chatDetail: false
   },
-  setDialogs: (dialog: 'deleteChat', to: boolean): void =>
+  setDialogs: (dialog: 'deleteChat' | 'chatDetail', to: boolean): void =>
     set(
       produce((state: IStore) => {
         state.dialogs[dialog] = to

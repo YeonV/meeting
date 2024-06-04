@@ -14,6 +14,7 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
   const { t } = useTranslation(language)
 
   const chats = useStore((state) => state.chats)
+  const chatDetail = useStore((state) => state.dialogs.chatDetail)
   const displayName = useStore((state) => state.displayName)
   const activeChat = useStore((state) => state.activeChat)
   const chat = chats.find((c) => c.id === activeChat)
@@ -27,9 +28,12 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
   moment.locale(language)
   const displayTime = moment().diff(moment(msg?.time), 'days') <= 2 ? timeFromNow : formattedDate
 
+  console.log("MSG:",msg, chat)
+
   const lastSender = msg?.author || ''
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const menuOpen = Boolean(anchorEl)
+  
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -43,9 +47,9 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         {lastSender && lastSender !== 'INTERNAL_SYSTEM_MESSAGE' ? (
           <>
-            <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText, mr: 2 }}>{lastSender?.charAt(0)}</Avatar>
+            <Avatar onClick={()=>setDialogs('chatDetail', !chatDetail)} sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText, mr: 2 }} src={chat?.group ? chat?.name : chat?.infos?.find(c => c.name === otherUser)?.avatar || undefined}>{chat?.group ? lastSender?.charAt(0) : otherUser?.charAt(0)}</Avatar>
             <Stack direction='row' justifyContent={'space-between'} alignItems={'flex-end'} width={'100%'}>
-              <Typography variant='h6' component='div'>
+              <Typography variant='h6' component='div' onClick={()=>setDialogs('chatDetail', !chatDetail)}>
                 {chat?.group ? chat?.name : otherUser}
               </Typography>
 

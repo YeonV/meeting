@@ -33,6 +33,7 @@ const User = ({
   const timeFromNow = moment(time).fromNow()
   const formattedDate = moment(time).format('DD.MM.YYYY, hh:mm')
   const displayTime = moment().diff(moment(time), 'days') <= 2 ? timeFromNow : formattedDate
+  console.log("Otheruser:",otherUser)
   return (
     <Box
       key={name}
@@ -50,7 +51,8 @@ const User = ({
         }
       }}
     >
-      <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText, mr: 2 }}>{otherUser?.charAt(0)}</Avatar>
+      {/* <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText, mr: 2 }}>{otherUser?.charAt(0)}</Avatar> */}
+      <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText, mr: 2 }} src={chat?.group ? chat?.name : chat?.infos?.find(c => c.name === otherUser)?.avatar || undefined}>{chat?.group ? chat.name?.charAt(0) : otherUser?.charAt(0)}</Avatar>
       <Stack direction='column' spacing={0} alignItems='flex-start' flex={1}>
         <Box>{group ? name : otherUser}</Box>
         <Typography color={theme.palette.text.disabled}>{content}</Typography>

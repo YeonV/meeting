@@ -4,7 +4,7 @@ import { IMessage } from '@/types/chat/IMessage'
 import { IReaction } from '@/types/chat/IReaction'
 import { useSession } from 'next-auth/react'
 import { useWebSocket } from 'next-ws/client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { List, ListItem, Stack } from '@mui/material'
 import PopupState, { bindPopover, bindHover } from 'material-ui-popup-state'
 import MessageWrapper from './Message/MessageWrapper'
@@ -16,6 +16,7 @@ import Reaction from './Message/Reaction'
 import Message from './Message/Message'
 import useStore from '@/store/useStore'
 import useTranslation, { formatedDayDate } from '@/lib/utils'
+import ChatDetail from '../ChatDetail'
 
 export interface IReactionWithCount extends IReaction {
   count: number
@@ -33,12 +34,16 @@ const History = ({ messages, emojiOpen, group }: { group?: boolean; messages: IM
   const displayName = useStore((state) => state.displayName)
   const activeChat = useStore((state) => state.activeChat)
   const chatId = chats.find((chat) => chat.id === activeChat)?.id || '1'
+  
+  const chatDetail = useStore((state) => state.dialogs.chatDetail)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
   }, [messages])
+
+  console.log(session)
 
   const openPrivateChat = (recipient: string) => {
     const newId = chats.find((chat) => chat.name === recipient)?.id
@@ -49,7 +54,17 @@ const History = ({ messages, emojiOpen, group }: { group?: boolean; messages: IM
         name: recipient,
         group: false,
         messages: [],
-        members: [recipient, displayName]
+        members: [recipient, displayName],
+        infos: [
+          {
+            name: recipient,
+            avatar: null
+          },
+          {
+            name: displayName,
+            avatar: session?.user.image
+          }
+        ]
       })
       setActiveChat(newerId)
       const msg = JSON.stringify({
@@ -57,7 +72,7 @@ const History = ({ messages, emojiOpen, group }: { group?: boolean; messages: IM
         author: 'INTERNAL_SYSTEM_MESSAGE',
         content: t('Chat started!'),
         recipients: [recipient, displayName || 'General'],
-        chatId: newerId
+        chatId: newerId,
       })
       ws?.send(msg)
     }
@@ -68,9 +83,9 @@ const History = ({ messages, emojiOpen, group }: { group?: boolean; messages: IM
   let lastDate = null as string | null
 
   return (
-    <List sx={{ flexGrow: 1, maxHeight: `calc(100vh - ${emojiOpen ? 834 : 315}px)`, overflow: 'auto', position: 'relative', p: 0, pb: 0 }}>
+    <List sx={{ flexGrow: 1, maxHeight: `calc(100vh - ${emojiOpen ? 834 : 315}px)`, overflow: chatDetail ? 'hidden': 'auto', position: 'relative', p: 0, pb: 0, }}>
       <HistoryBg />
-      {sortedMessages.map(({ author, content, time, reactions, id }, index) => {
+      {sortedMessages.map(({ author, content, time, reactions, id, authorAvatar }, index) => {
         const isMe = author === displayName
         const align = isMe ? 'flex-end' : 'flex-start'
 
@@ -101,7 +116,7 @@ const History = ({ messages, emojiOpen, group }: { group?: boolean; messages: IM
                 <SystemMessage content={content} />
               ) : (
                 <Stack direction='row' spacing={2} justifyContent={align} alignItems={'flex-start'}>
-                  {!isMe && group && <MessageAvatar author={author} onClick={() => openPrivateChat(author)} />}
+                  {!isMe && group && <MessageAvatar author={author} authorAvatar={authorAvatar} onClick={() => openPrivateChat(author)} />}
                   <PopupState variant='popover' popupId='reactions-popover'>
                     {(popupState) => (
                       <>
