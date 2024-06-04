@@ -74,6 +74,14 @@ const storeChat = (set: any, get: any) => ({
     )
     return chat.id
   },
+  updateChatInfo: (chatId: string, infos: { name: string, avatar: string | null | undefined }[]): void =>
+    set(
+      produce((state: IStore) => {
+        state.chats = state.chats.map((c) => (c.id === chatId ? { ...c, infos: infos } : c))
+      }),
+      false,
+      'chat/updateChat'
+    ),
   removeChat: (chatName: string): void =>
     set(
       produce((state: IStore) => {
@@ -154,9 +162,9 @@ const storeChat = (set: any, get: any) => ({
         state.chats = state.chats.map((c) =>
           c.id === chatId
             ? {
-                ...c,
-                messages: c.messages.map((m) => (m.id === messageId ? { ...m, reactions: m.reactions ? [...m.reactions, reaction] : [reaction] } : m))
-              }
+              ...c,
+              messages: c.messages.map((m) => (m.id === messageId ? { ...m, reactions: m.reactions ? [...m.reactions, reaction] : [reaction] } : m))
+            }
             : c
         )
       }),
@@ -169,11 +177,11 @@ const storeChat = (set: any, get: any) => ({
         state.chats = state.chats.map((c) =>
           c.id === chatId
             ? {
-                ...c,
-                messages: c.messages.map((m) =>
-                  m.id === messageId ? { ...m, reactions: m.reactions?.filter((r) => r.author !== reaction.author || r.emoji !== reaction.emoji) } : m
-                )
-              }
+              ...c,
+              messages: c.messages.map((m) =>
+                m.id === messageId ? { ...m, reactions: m.reactions?.filter((r) => r.author !== reaction.author || r.emoji !== reaction.emoji) } : m
+              )
+            }
             : c
         )
       }),

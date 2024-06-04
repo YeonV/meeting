@@ -7,6 +7,7 @@ export interface IMessage {
   time?: number
   reactions?: IReaction[]
   recipients?: string[]
+  authorAvatar?: string | null
 }
 
 export interface IWsMessage {
@@ -15,4 +16,5 @@ export interface IWsMessage {
   recipients: string[]
   chatId: string
   msgId: string
+  authorAvatar: string
 }

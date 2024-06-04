@@ -2,9 +2,11 @@ import { Avatar, useTheme } from '@mui/material'
 
 const MessageAvatar = ({
   author,
-  onClick
+  onClick,
+  authorAvatar
 }: {
   author: string,
+  authorAvatar?: string | null | undefined,
   onClick?: () => void
 }) => {
   const theme = useTheme()
@@ -12,8 +14,9 @@ const MessageAvatar = ({
     <Avatar
       onClick={onClick}
       sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText, mr: 2, cursor: 'pointer' }}
+      src={authorAvatar || undefined}
     >
-      {author.charAt(0)}
+      {!authorAvatar && author.charAt(0)}
     </Avatar>
   )
 }
