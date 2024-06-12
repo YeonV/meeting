@@ -4,6 +4,7 @@ import { IChat } from '@/types/chat/iChat'
 import { IMessage } from '@/types/chat/IMessage'
 import { v4 as uuidv4 } from 'uuid'
 import { IReaction } from '@/types/chat/IReaction'
+import Peer from 'peerjs'
 
 const storeChat = (set: any, get: any) => ({
   displayName: '',
@@ -162,9 +163,9 @@ const storeChat = (set: any, get: any) => ({
         state.chats = state.chats.map((c) =>
           c.id === chatId
             ? {
-                ...c,
-                messages: c.messages.map((m) => (m.id === messageId ? { ...m, reactions: m.reactions ? [...m.reactions, reaction] : [reaction] } : m))
-              }
+              ...c,
+              messages: c.messages.map((m) => (m.id === messageId ? { ...m, reactions: m.reactions ? [...m.reactions, reaction] : [reaction] } : m))
+            }
             : c
         )
       }),
@@ -177,11 +178,11 @@ const storeChat = (set: any, get: any) => ({
         state.chats = state.chats.map((c) =>
           c.id === chatId
             ? {
-                ...c,
-                messages: c.messages.map((m) =>
-                  m.id === messageId ? { ...m, reactions: m.reactions?.filter((r) => r.author !== reaction.author || r.emoji !== reaction.emoji) } : m
-                )
-              }
+              ...c,
+              messages: c.messages.map((m) =>
+                m.id === messageId ? { ...m, reactions: m.reactions?.filter((r) => r.author !== reaction.author || r.emoji !== reaction.emoji) } : m
+              )
+            }
             : c
         )
       }),
@@ -196,7 +197,25 @@ const storeChat = (set: any, get: any) => ({
       }),
       false,
       'chat/setMyCallId'
+    ),
+  otherCallId: '',
+  setOtherCallId: (id: string): void =>
+    set(
+      produce((state: IStore) => {
+        state.otherCallId = id
+      }),
+      false,
+      'chat/setOtherCallId'
     )
+  // peerInstance: null as Peer | null,
+  // setPeerInstance: (peer: Peer): void =>
+  //   set(
+  //     produce((state: IStore) => {
+  //       state.peerInstance = peer
+  //     }),
+  //     false,
+  //     'chat/setPeerInstance'
+  //   ),
 })
 
 export default storeChat

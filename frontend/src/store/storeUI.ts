@@ -14,9 +14,10 @@ const storeUI = (set: any) => ({
     ),
   dialogs: {
     deleteChat: false,
-    chatDetail: false
+    chatDetail: false,
+    incomingCall: false
   },
-  setDialogs: (dialog: 'deleteChat' | 'chatDetail', to: boolean): void =>
+  setDialogs: (dialog: 'deleteChat' | 'chatDetail' | 'incomingCall', to: boolean): void =>
     set(
       produce((state: IStore) => {
         state.dialogs[dialog] = to
