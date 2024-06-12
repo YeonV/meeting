@@ -11,6 +11,7 @@ import Chat from '../Chat/Chat'
 import WsProvider from '../../Providers/WsProvider'
 import Welcome from '../Welcome/Welcome'
 import Admin from '../Admin/Admin'
+import VideoChat from '../VideoChat/VideoChat'
 
 const Content = () => {
   const { data: session } = useSession()
@@ -49,6 +50,11 @@ const Content = () => {
             {currentTab === 4 && (
               <div style={{ paddingTop: '2rem', display: 'flex', flexGrow: 1 }}>
                 <Admin />
+              </div>
+            )}
+            {currentTab === 5 && (
+              <div style={{ paddingTop: '2rem', display: 'flex', flexGrow: 1 }}>
+                <VideoChat />
               </div>
             )}
           </Box>

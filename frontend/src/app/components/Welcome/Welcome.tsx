@@ -18,9 +18,8 @@ import Typography from '../Motion/Typography'
 import Stack from '../Motion/Stack'
 import Box from '../Motion/Box'
 import Grid from '../Motion/Grid'
-import { staggerContainer, staggerItem } from '../Motion/Stagger'
 import { StaggerGrid } from '../Motion/StaggerGrid'
-
+import IncomingCall from '../VideoChat/IncomingCall'
 const Welcome = ({ notify }: { notify: () => void }) => {
   const dev = useStore((state) => state.dev)
   const language = useStore((state) => state.language)
@@ -36,6 +35,7 @@ const Welcome = ({ notify }: { notify: () => void }) => {
 
   return (
     <Box flex={1} display='flex' justifyContent='center' alignItems='center' flexDirection={'column'}>
+      <IncomingCall callerId='John Doe' onAccept={() => {}} onReject={() => {}} />
       <Grid container maxWidth={1200}>
         {/* <Grid item xs={12} md={6} p={4} sx={{ display: 'flex', justifyContent: 'flex-end', flexDirection: 'column' }} {...staggerContainer('y', 1.5)}>
           <Typography variant='h4' color={'GrayText'} {...staggerItem()}>
@@ -55,9 +55,7 @@ const Welcome = ({ notify }: { notify: () => void }) => {
           <Typography variant='h4' color={'GrayText'}>
             {t('welcome-title-overline')}
           </Typography>
-          <Typography variant='h1'>
-            {t('welcome-title')}
-          </Typography>
+          <Typography variant='h1'>{t('welcome-title')}</Typography>
           <Typography color={'GrayText'} fontWeight={100} mt={6} variant='h5'>
             {t('welcome-description')}
           </Typography>
@@ -69,7 +67,15 @@ const Welcome = ({ notify }: { notify: () => void }) => {
         <Logos />
       </Grid>
 
-      <Stack mt={16} maxWidth={1200} minWidth={100} justifyContent={'center'} textAlign={'center'} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 3 } }}>
+      <Stack
+        mt={16}
+        maxWidth={1200}
+        minWidth={100}
+        justifyContent={'center'}
+        textAlign={'center'}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, transition: { delay: 3 } }}
+      >
         {session && session.user ? (
           'Authenticated Section'
         ) : (
@@ -77,16 +83,21 @@ const Welcome = ({ notify }: { notify: () => void }) => {
             <Typography variant='h2' mt={0} mb={6}>
               Getting Started
             </Typography>
-            <Typography variant='h4' color={'GrayText'} mb={16} mt={2} sx={{ '&:hover': { color: '#ddd' } }}
+            <Typography
+              variant='h4'
+              color={'GrayText'}
+              mb={16}
+              mt={2}
+              sx={{ '&:hover': { color: '#ddd' } }}
               whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}>
+              whileTap={{ scale: 0.9 }}
+            >
               <code onClick={c} style={{ backgroundColor: '#000', padding: '1.4rem 4rem', borderRadius: 20, position: 'relative', cursor: 'pointer' }}>
                 {`npx create-nextws@latest`}
                 <IconButton color='inherit' size='small' style={{ position: 'absolute', right: 12, top: 26 }}>
                   <CopyAll color='inherit' />
                 </IconButton>
               </code>
-
             </Typography>
           </Box>
         )}

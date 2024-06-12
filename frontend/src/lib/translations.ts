@@ -47,7 +47,8 @@ const messages = {
     'welcome-signed-in': 'Successfully signed in',
     'Test Snackbar': 'Test Snackbar',
     'Toggle DarkMode': 'Toggle DarkMode',
-    'Admin': 'Admin'
+    'Admin': 'Admin',
+    'Video-Chat': 'Video-Chat'
   },
   de: {
     'Chat': 'Chat',
@@ -94,7 +95,8 @@ const messages = {
     'welcome-signed-in': 'Erfolgreich angemeldet',
     'Test Snackbar': 'Snackbar testen',
     'Toggle DarkMode': 'DarkMode umschalten',
-    'Admin': 'Admin'
+    'Admin': 'Admin',
+    'Video-Chat': 'Video-Chat'
   }
   // fr: {
   //   'Chat': 'Chat',

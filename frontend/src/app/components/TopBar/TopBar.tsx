@@ -15,6 +15,7 @@ import {
   Login,
   Logout,
   MessageRounded,
+  VideoChat,
   Visibility
 } from '@mui/icons-material'
 import AppBar from '@mui/material/AppBar'
@@ -83,6 +84,7 @@ const TopBarBase = () => {
                 <Tab iconPosition='start' icon={<CalendarToday />} value={1} label={t('Calendar')} />
                 <Tab iconPosition='start' icon={<List />} value={2} label={t('Meetings')} />
                 <Tab iconPosition='start' icon={<Chat />} value={3} label={t('Chat')} />
+                <Tab iconPosition='start' icon={<VideoChat />} value={3} label={t('Video-Chat')} />
                 {(me.role?.type === 'privileged' || me.role?.type === 'administrator') && (
                   <Tab iconPosition='start' icon={<AdminPanelSettings />} value={4} label={t('Admin')} />
                 )}
