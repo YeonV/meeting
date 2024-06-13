@@ -1,150 +1,116 @@
-"use client";
+'use client'
 
-import useStore from "@/store/useStore";
-import { ClearAll, MoreVert, Search, VideoCall } from "@mui/icons-material";
-import {
-  Typography,
-  useTheme,
-  Stack,
-  Toolbar,
-  AppBar,
-  Avatar,
-  IconButton,
-  Icon,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
-import moment from "moment";
-import { useState } from "react";
-import useTranslation from "@/lib/utils";
-import DialogDeleteChat from "../../Dialogs/DialogDeleteChat";
-import { v4 as uuidv4 } from "uuid";
-import { useSession } from "next-auth/react";
-import { useWebSocket } from "next-ws/client";
+import useStore from '@/store/useStore'
+import { ClearAll, MoreVert, Search, VideoCall } from '@mui/icons-material'
+import { Typography, useTheme, Stack, Toolbar, AppBar, Avatar, IconButton, Icon, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material'
+import moment from 'moment'
+import { useState } from 'react'
+import useTranslation from '@/lib/utils'
+import DialogDeleteChat from '../../Dialogs/DialogDeleteChat'
+import { v4 as uuidv4 } from 'uuid'
+import { useSession } from 'next-auth/react'
+import { useWebSocket } from 'next-ws/client'
 
 const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
-  const theme = useTheme();
-  const language = useStore((state) => state.language);
-  const { t } = useTranslation(language);
-  const { data: session } = useSession();
+  const theme = useTheme()
+  const language = useStore((state) => state.language)
+  const { t } = useTranslation(language)
+  const { data: session } = useSession()
 
-  const ws = useWebSocket();
-  const chats = useStore((state) => state.chats);
-  const chatDetail = useStore((state) => state.dialogs.chatDetail);
-  const displayName = useStore((state) => state.displayName);
-  const myCallId = useStore((state) => state.myCallId);
-  const activeChat = useStore((state) => state.activeChat);
-  const chat = chats.find((c) => c.id === activeChat);
-  const msg = chat?.messages?.[(chat?.messages).length - 1];
+  const ws = useWebSocket()
+  const chats = useStore((state) => state.chats)
+  const chatDetail = useStore((state) => state.dialogs.chatDetail)
+  const displayName = useStore((state) => state.displayName)
+  const myCallId = useStore((state) => state.myCallId)
+  const activeChat = useStore((state) => state.activeChat)
+  const chat = chats.find((c) => c.id === activeChat)
+  const msg = chat?.messages?.[(chat?.messages).length - 1]
   const otherUser = chat?.name
-    .split(",")
-    .filter((m) => m !== "General" && m !== displayName)
-    .join(",");
-  const timeFromNow = moment(msg?.time).fromNow();
-  const formattedDate = moment(msg?.time).format("DD.MM.YYYY, hh:mm");
-  moment.locale(language);
-  const displayTime =
-    moment().diff(moment(msg?.time), "days") <= 2 ? timeFromNow : formattedDate;
+    .split(',')
+    .filter((m) => m !== 'General' && m !== displayName)
+    .join(',')
+  const timeFromNow = moment(msg?.time).fromNow()
+  const formattedDate = moment(msg?.time).format('DD.MM.YYYY, hh:mm')
+  moment.locale(language)
+  const displayTime = moment().diff(moment(msg?.time), 'days') <= 2 ? timeFromNow : formattedDate
 
-  console.log("MSG:", msg, chat);
+  console.log('MSG:', msg, chat)
 
-  const lastSender = msg?.author || "";
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const menuOpen = Boolean(anchorEl);
+  const lastSender = msg?.author || ''
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const menuOpen = Boolean(anchorEl)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleCall = () => {
-    console.log("stringifieng msg");
+    console.log('stringifieng msg')
     const msg = JSON.stringify({
-      type: "videocall",
-      content: myCallId,
-      recipients: chat?.members || ["General"],
+      type: 'videocall',
+      callerId: myCallId,
+      recipients: chat?.members || ['General'],
       chatId: chat?.id,
       msgId: uuidv4(),
       authorAvatar: session?.user.image,
-    });
-    console.log("stringifieng successfull");
-    ws?.send(msg);
-  };
+      authorName: displayName
+    })
+    console.log('stringifieng successfull')
+    ws?.send(msg)
+  }
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-  const setDialogs = useStore((state) => state.setDialogs);
+    setAnchorEl(null)
+  }
+  const setDialogs = useStore((state) => state.setDialogs)
 
   return (
-    <AppBar
-      position="absolute"
-      sx={{ borderRadius: rounded ? "12px 12px 0 0" : 0 }}
-    >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
-        {lastSender && lastSender !== "INTERNAL_SYSTEM_MESSAGE" ? (
+    <AppBar position='absolute' sx={{ borderRadius: rounded ? '12px 12px 0 0' : 0 }}>
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
+        {lastSender && lastSender !== 'INTERNAL_SYSTEM_MESSAGE' ? (
           <>
             <Avatar
-              onClick={() => setDialogs("chatDetail", !chatDetail)}
+              onClick={() => setDialogs('chatDetail', !chatDetail)}
               sx={{
                 bgcolor: theme.palette.secondary.main,
                 color: theme.palette.primary.contrastText,
-                mr: 2,
+                mr: 2
               }}
-              src={
-                chat?.group
-                  ? chat?.name
-                  : chat?.infos?.find((c) => c.name === otherUser)?.avatar ||
-                    undefined
-              }
+              src={chat?.group ? chat?.name : chat?.infos?.find((c) => c.name === otherUser)?.avatar || undefined}
             >
               {chat?.group ? lastSender?.charAt(0) : otherUser?.charAt(0)}
             </Avatar>
-            <Stack
-              direction="row"
-              justifyContent={"space-between"}
-              alignItems={"flex-end"}
-              width={"100%"}
-            >
-              <Typography
-                variant="h6"
-                component="div"
-                onClick={() => setDialogs("chatDetail", !chatDetail)}
-              >
+            <Stack direction='row' justifyContent={'space-between'} alignItems={'flex-end'} width={'100%'}>
+              <Typography variant='h6' component='div' onClick={() => setDialogs('chatDetail', !chatDetail)}>
                 {chat?.group ? chat?.name : otherUser}
               </Typography>
 
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Stack direction="column" textAlign={"right"}>
-                  <Typography
-                    variant="caption"
-                    component="div"
-                    color={theme.palette.grey[500]}
-                  >
-                    {lastSender === displayName ? t("You") : lastSender}
+              <Stack direction='row' spacing={2} alignItems='center'>
+                <Stack direction='column' textAlign={'right'}>
+                  <Typography variant='caption' component='div' color={theme.palette.grey[500]}>
+                    {lastSender === displayName ? t('You') : lastSender}
                   </Typography>
-                  <Typography variant="caption" component="div">
+                  <Typography variant='caption' component='div'>
                     {displayTime}
                   </Typography>
                 </Stack>
-                <IconButton color="inherit">
+                <IconButton color='inherit'>
                   <Search />
                 </IconButton>
               </Stack>
             </Stack>
           </>
         ) : (
-          <Typography variant="h6" component="div">
-            {t("Chat")}
+          <Typography variant='h6' component='div'>
+            {t('Chat')}
           </Typography>
         )}
         {!chat?.group && (
-          <IconButton color="inherit" onClick={handleCall}>
+          <IconButton color='inherit' onClick={handleCall}>
             <VideoCall />
           </IconButton>
         )}
-        <IconButton color="inherit" onClick={handleClick}>
+        <IconButton color='inherit' onClick={handleClick}>
           <MoreVert />
         </IconButton>
 
@@ -154,30 +120,30 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
           anchorEl={anchorEl}
           onClose={handleMenuClose}
           anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
+            vertical: 'bottom',
+            horizontal: 'right'
           }}
           transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
+            vertical: 'top',
+            horizontal: 'right'
           }}
         >
           <MenuItem
             onClick={() => {
-              setDialogs("deleteChat", true);
-              handleMenuClose();
+              setDialogs('deleteChat', true)
+              handleMenuClose()
             }}
           >
             <ListItemIcon>
               <ClearAll />
             </ListItemIcon>
-            <ListItemText>{t("Cleat all chats")}</ListItemText>
+            <ListItemText>{t('Cleat all chats')}</ListItemText>
           </MenuItem>
         </Menu>
         <DialogDeleteChat />
       </Toolbar>
     </AppBar>
-  );
-};
+  )
+}
 
-export default HeaderBar;
+export default HeaderBar
