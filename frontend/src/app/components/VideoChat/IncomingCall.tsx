@@ -49,8 +49,8 @@ const IncomingCall: React.FC<IncomingCallProps> = ({ onAccept, onReject, peerIns
       let peer: Peer
       if (typeof window !== 'undefined') {
         peer = new Peer(myCallId, {
-          host: 'localhost',
-          port: 9000,
+          host: (process.env.NEXT_PUBLIC_PEERJS_URL_DOCKER || 'localhost').split(':')[1].replace('//', ''),
+          port: parseInt((process.env.NEXT_PUBLIC_PEERJS_URL_DOCKER|| 'y:9000').split(':')[2]),
           path: '/myapp'
         })
 

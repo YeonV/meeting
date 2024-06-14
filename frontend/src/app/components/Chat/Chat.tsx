@@ -70,7 +70,8 @@ const Chat = () => {
         }
       };
     }
-  }, [myCallId]);
+  }, [chat?.group, myCallId]);
+  
   return (
     <>
       <IncomingCall

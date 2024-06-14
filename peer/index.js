@@ -13,8 +13,6 @@ const server = http.createServer(function (req, res) {
   res.end('Hello world!')
 })
 
-const PORT = 9000
-
 app.use(express.static('public'))
 
 const peerServer = ExpressPeerServer(server, {
@@ -24,6 +22,6 @@ const peerServer = ExpressPeerServer(server, {
 
 app.use('/myapp', peerServer)
 
-server.listen(PORT, () => {
-  console.log(`PeerJS server running on port ${PORT}`)
+server.listen(process.env.PEERJS_PORT, () => {
+  console.log(`PeerJS server running on port ${process.env.PEERJS_PORT}`)
 })

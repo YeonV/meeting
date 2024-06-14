@@ -53,7 +53,20 @@ services:
       - yzstrapiDB
       - yzstrapiweb
 
- 
+  yzpeerjs:
+    container_name: yzpeerjs
+    image: peerjs/peerjs-server
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      VIRTUAL_HOST: ${PEERJS_SUB_DOMAIN}.${BASE_DOMAIN}
+      VIRTUAL_PORT: ${PEERJS_PORT}
+      LETSENCRYPT_HOST: ${PEERJS_SUB_DOMAIN}.${BASE_DOMAIN}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      PORT: ${PEERJS_PORT}
+    ports:
+      - "${PEERJS_PORT}:${PEERJS_PORT}"
+
   yzstrapiweb:
     container_name: yzstrapiweb
     image: blade86/strapi-v4:latest-amd64
