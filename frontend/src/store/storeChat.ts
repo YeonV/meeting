@@ -234,7 +234,16 @@ const storeChat = (set: any, get: any) => ({
       }),
       false,
       'chat/setRinging'
-    )
+    ),
+    imTheCaller: false,
+    setImTheCaller: (caller: boolean): void =>
+      set(
+        produce((state: IStore) => {
+          state.imTheCaller = caller
+        }),
+        false,
+        'chat/setImTheCaller'
+      ),
   // peerInstance: null as Peer | null,
   // setPeerInstance: (peer: Peer): void =>
   //   set(

@@ -22,6 +22,8 @@ const IncomingCall: React.FC = () => {
   const otherCallId = useStore((state) => state.otherCallId)
   const otherAuthorName = useStore((state) => state.otherAuthorName)
   const otherAuthorAvatar = useStore((state) => state.otherAuthorAvatar)
+  const imTheCaller = useStore((state) => state.imTheCaller);
+  const displayName = useStore((state) => state.displayName);
   const myVideoRef = useRef<HTMLVideoElement>(null)
   const callingVideoRef = useRef<HTMLVideoElement>(null)
   const myCallId = useStore((state) => state.myCallId)
@@ -128,7 +130,11 @@ const IncomingCall: React.FC = () => {
             {otherAuthorAvatar ? null : otherAuthorName.charAt(0)}
           </Avatar>
         </motion.div>
-        <Typography sx={{ fontWeight: 500, fontSize: '1.2rem' }}>{otherAuthorName} is calling</Typography>
+        <Typography sx={{ fontWeight: 500, fontSize: '1.2rem' }}>
+          {imTheCaller
+            ? `calling ${otherAuthorName}`
+            : `${otherAuthorName} is calling`}
+        </Typography>
       </DialogTitle>
       <IconButton onClick={() => setRinging(!ringing)} sx={{ position: 'absolute', top: '1rem', right: '5rem' }}>
         {ringing ? <VolumeOff /> : <RingVolume />}
@@ -150,10 +156,10 @@ const IncomingCall: React.FC = () => {
         >
           <Grid container spacing={0} minWidth={640} minHeight={250}>
             <Grid item xs={12} md={6}>
-              <VideoFrame callingVideoRef={myVideoRef} muted />
+              <VideoFrame callingVideoRef={myVideoRef} name={displayName} muted />
             </Grid>
             <Grid item xs={12} md={6} >
-              <VideoFrame callingVideoRef={callingVideoRef} />
+              <VideoFrame callingVideoRef={callingVideoRef} name={otherAuthorName} />
             </Grid>
           </Grid>
         </Paper>
@@ -210,9 +216,9 @@ const IncomingCall: React.FC = () => {
               ws?.send(msg)
             }}
           >
-            Reject
+            {imTheCaller ? 'Hang up' : 'Reject'}
           </Button>
-          <Button
+          {!imTheCaller && <Button
             startIcon={<Call />}
             color='primary'
             variant='contained'
@@ -233,7 +239,7 @@ const IncomingCall: React.FC = () => {
             }}
           >
             Accept
-          </Button>
+          </Button>}
           </Stack>
         </Stack>
       </DialogActions>

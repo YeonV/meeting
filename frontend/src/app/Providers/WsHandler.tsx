@@ -30,7 +30,8 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
   const setRinging = useStore((state) => state.setRinging)
   const setOtherAuthorAvatar = useStore((state) => state.setOtherAuthorAvatar)
   const setOtherAuthorName = useStore((state) => state.setOtherAuthorName)
-
+  const setImTheCaller = useStore((state) => state.setImTheCaller);
+  
   const ws = useWebSocket()
 
   const onMessage = useCallback(
@@ -50,9 +51,11 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
           setOtherCallId(callerId)
           setOtherAuthorAvatar(authorAvatar)
           setOtherAuthorName(authorName)
+          setImTheCaller(false);
           setRinging(true)
           console.log('setting incomingcall')
         } else {
+          setImTheCaller(true);
           ws?.send(
             JSON.stringify({
               type: 'videocall-accepted',
