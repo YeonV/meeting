@@ -37,10 +37,10 @@ const storeChat = (set: any, get: any) => ({
           content: 'Hi!',
           time: +new Date(),
           reactions: [],
-          recipients: ['General']
-        }
-      ]
-    }
+          recipients: ['General'],
+        },
+      ],
+    },
   ] as IChat[],
   getChatIdByMembers: (members: string[]): string | undefined => {
     const chats = (get() as IStore).chats
@@ -75,10 +75,15 @@ const storeChat = (set: any, get: any) => ({
     )
     return chat.id
   },
-  updateChatInfo: (chatId: string, infos: { name: string; avatar: string | null | undefined }[]): void =>
+  updateChatInfo: (
+    chatId: string,
+    infos: { name: string; avatar: string | null | undefined }[]
+  ): void =>
     set(
       produce((state: IStore) => {
-        state.chats = state.chats.map((c) => (c.id === chatId ? { ...c, infos: infos } : c))
+        state.chats = state.chats.map((c) =>
+          c.id === chatId ? { ...c, infos: infos } : c
+        )
       }),
       false,
       'chat/updateChat'
@@ -106,10 +111,10 @@ const storeChat = (set: any, get: any) => ({
                 content: 'Hi!',
                 time: +new Date(),
                 reactions: [],
-                recipients: ['General']
-              }
-            ]
-          }
+                recipients: ['General'],
+              },
+            ],
+          },
         ] as IChat[]
       }),
       false,
@@ -127,7 +132,9 @@ const storeChat = (set: any, get: any) => ({
     message.time = new Date().getTime()
     return set(
       produce((state: IStore) => {
-        state.chats = state.chats.map((c) => (c.id === chatId ? { ...c, messages: [...c.messages, message] } : c))
+        state.chats = state.chats.map((c) =>
+          c.id === chatId ? { ...c, messages: [...c.messages, message] } : c
+        )
       }),
       false,
       'chat/addMessage'
@@ -136,7 +143,9 @@ const storeChat = (set: any, get: any) => ({
   clearMessages: (chatName: string): void =>
     set(
       produce((state: IStore) => {
-        state.chats = state.chats.map((c) => (c.name === chatName ? { ...c, messages: [] } : c))
+        state.chats = state.chats.map((c) =>
+          c.name === chatName ? { ...c, messages: [] } : c
+        )
       }),
       false,
       'chat/clearMessages'
@@ -144,7 +153,16 @@ const storeChat = (set: any, get: any) => ({
   updateMessage: (chatName: string, message: IMessage): void =>
     set(
       produce((state: IStore) => {
-        state.chats = state.chats.map((c) => (c.name === chatName ? { ...c, messages: c.messages.map((m) => (m.id === message.id ? message : m)) } : c))
+        state.chats = state.chats.map((c) =>
+          c.name === chatName
+            ? {
+                ...c,
+                messages: c.messages.map((m) =>
+                  m.id === message.id ? message : m
+                ),
+              }
+            : c
+        )
       }),
       false,
       'chat/updateMessage'
@@ -152,7 +170,11 @@ const storeChat = (set: any, get: any) => ({
   removeMessage: (chatName: string, messageId: string): void =>
     set(
       produce((state: IStore) => {
-        state.chats = state.chats.map((c) => (c.name === chatName ? { ...c, messages: c.messages.filter((m) => m.id !== messageId) } : c))
+        state.chats = state.chats.map((c) =>
+          c.name === chatName
+            ? { ...c, messages: c.messages.filter((m) => m.id !== messageId) }
+            : c
+        )
       }),
       false,
       'chat/removeMessage'
@@ -164,7 +186,16 @@ const storeChat = (set: any, get: any) => ({
           c.id === chatId
             ? {
                 ...c,
-                messages: c.messages.map((m) => (m.id === messageId ? { ...m, reactions: m.reactions ? [...m.reactions, reaction] : [reaction] } : m))
+                messages: c.messages.map((m) =>
+                  m.id === messageId
+                    ? {
+                        ...m,
+                        reactions: m.reactions
+                          ? [...m.reactions, reaction]
+                          : [reaction],
+                      }
+                    : m
+                ),
               }
             : c
         )
@@ -172,7 +203,11 @@ const storeChat = (set: any, get: any) => ({
       false,
       'chat/addReaction'
     ),
-  removeReaction: (chatId: string, messageId: string, reaction: IReaction): void =>
+  removeReaction: (
+    chatId: string,
+    messageId: string,
+    reaction: IReaction
+  ): void =>
     set(
       produce((state: IStore) => {
         state.chats = state.chats.map((c) =>
@@ -180,8 +215,17 @@ const storeChat = (set: any, get: any) => ({
             ? {
                 ...c,
                 messages: c.messages.map((m) =>
-                  m.id === messageId ? { ...m, reactions: m.reactions?.filter((r) => r.author !== reaction.author || r.emoji !== reaction.emoji) } : m
-                )
+                  m.id === messageId
+                    ? {
+                        ...m,
+                        reactions: m.reactions?.filter(
+                          (r) =>
+                            r.author !== reaction.author ||
+                            r.emoji !== reaction.emoji
+                        ),
+                      }
+                    : m
+                ),
               }
             : c
         )
@@ -235,15 +279,24 @@ const storeChat = (set: any, get: any) => ({
       false,
       'chat/setRinging'
     ),
-    imTheCaller: false,
-    setImTheCaller: (caller: boolean): void =>
-      set(
-        produce((state: IStore) => {
-          state.imTheCaller = caller
-        }),
-        false,
-        'chat/setImTheCaller'
-      ),
+  imTheCaller: false,
+  setImTheCaller: (caller: boolean): void =>
+    set(
+      produce((state: IStore) => {
+        state.imTheCaller = caller
+      }),
+      false,
+      'chat/setImTheCaller'
+    ),
+  inCall: false,
+  setInCall: (inCall: boolean): void =>
+    set(
+      produce((state: IStore) => {
+        state.inCall = inCall
+      }),
+      false,
+      'chat/setInCall'
+    ),
   // peerInstance: null as Peer | null,
   // setPeerInstance: (peer: Peer): void =>
   //   set(

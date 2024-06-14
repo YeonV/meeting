@@ -31,6 +31,7 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
   const setOtherAuthorAvatar = useStore((state) => state.setOtherAuthorAvatar)
   const setOtherAuthorName = useStore((state) => state.setOtherAuthorName)
   const setImTheCaller = useStore((state) => state.setImTheCaller);
+  const setInCall = useStore((state) => state.setInCall);
   
   const ws = useWebSocket()
 
@@ -76,6 +77,7 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
           console.log('setting incomingcall')
         }
         setDialogs('incomingCall', true)
+        setInCall(true)
       }
       if (eventType === 'videocall-rejected') {
         console.log('rejected call:', JSON.parse(event.data))
@@ -83,6 +85,7 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
         setRinging(false)
         setOtherCallId('')
         setOtherAuthorName('')
+        setInCall(false)
       }
       if (eventType === 'error') {
         console.log('error:', JSON.parse(event.data))

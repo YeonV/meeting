@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import useStore from '@/store/useStore'
 import Peer from 'peerjs'
-import { Call, CallEnd, CallMade, CallReceived, Flip, Fullscreen, FullscreenExit, Mic, RingVolume, VolumeMute, VolumeOff, VolumeUp } from '@mui/icons-material'
+import { Call, CallEnd, Flip, Fullscreen, FullscreenExit, Mic, RingVolume, VolumeOff, VolumeUp } from '@mui/icons-material'
 import VideoFrame from './VideoFrame'
 import { useWebSocket } from 'next-ws/client'
 
@@ -27,6 +27,7 @@ const IncomingCall: React.FC = () => {
   const myVideoRef = useRef<HTMLVideoElement>(null)
   const callingVideoRef = useRef<HTMLVideoElement>(null)
   const myCallId = useStore((state) => state.myCallId)
+  const inCall = useStore((state) => state.inCall)
   const ws = useWebSocket()
   const handleClose = () => {
     setOpen('incomingCall', false)
@@ -131,9 +132,11 @@ const IncomingCall: React.FC = () => {
           </Avatar>
         </motion.div>
         <Typography sx={{ fontWeight: 500, fontSize: '1.2rem' }}>
-          {imTheCaller
-            ? `calling ${otherAuthorName}`
-            : `${otherAuthorName} is calling`}
+          {inCall 
+            ? `in call with ${otherAuthorName}`
+            : imTheCaller
+              ? `calling ${otherAuthorName}`
+              : `${otherAuthorName} is calling`}
         </Typography>
       </DialogTitle>
       <IconButton onClick={() => setRinging(!ringing)} sx={{ position: 'absolute', top: '1rem', right: '5rem' }}>
@@ -216,9 +219,9 @@ const IncomingCall: React.FC = () => {
               ws?.send(msg)
             }}
           >
-            {imTheCaller ? 'Hang up' : 'Reject'}
+            {imTheCaller || inCall ? 'Hang up' : 'Reject'}
           </Button>
-          {!imTheCaller && <Button
+          {!imTheCaller && !inCall && <Button
             startIcon={<Call />}
             color='primary'
             variant='contained'
