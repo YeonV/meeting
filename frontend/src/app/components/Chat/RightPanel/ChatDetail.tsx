@@ -55,7 +55,6 @@ const ChatDetail = ({
   const language = useStore((state) => state.language);
   const { t } = useTranslation(language);
   const messages = chats.flatMap((c) => c.messages);
-  console.log("yz", boxHeight);
   return (
     <MotionBox
       id="chat-detail"

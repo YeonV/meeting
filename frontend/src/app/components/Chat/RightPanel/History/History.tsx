@@ -43,7 +43,7 @@ const History = ({ messages, emojiOpen, group }: { group?: boolean; messages: IM
     messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
   }, [messages])
 
-  console.log(session)
+  // console.log(session)
 
   const openPrivateChat = (recipient: string) => {
     const newId = chats.find((chat) => chat.name === recipient)?.id

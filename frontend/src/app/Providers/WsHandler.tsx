@@ -74,6 +74,13 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
         }
         setDialogs('incomingCall', true)
       }
+      if (eventType === 'videocall-rejected') {
+        console.log('rejected call:', JSON.parse(event.data))
+        setDialogs('incomingCall', false)
+        setRinging(false)
+        setOtherCallId('')
+        setOtherAuthorName('')
+      }
       if (eventType === 'error') {
         console.log('error:', JSON.parse(event.data))
         if (JSON.parse(event.data).content === 'Display name already in use. Please choose another one.') {

@@ -23,6 +23,7 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
   const displayName = useStore((state) => state.displayName)
   const myCallId = useStore((state) => state.myCallId)
   const activeChat = useStore((state) => state.activeChat)
+  const setRinging = useStore((state) => state.setRinging)
   const chat = chats.find((c) => c.id === activeChat)
   const msg = chat?.messages?.[(chat?.messages).length - 1]
   const otherUser = chat?.name
@@ -34,7 +35,7 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
   moment.locale(language)
   const displayTime = moment().diff(moment(msg?.time), 'days') <= 2 ? timeFromNow : formattedDate
 
-  console.log('MSG:', msg, chat)
+  // console.log('MSG:', msg, chat)
 
   const lastSender = msg?.author || ''
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -57,6 +58,7 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
     })
     console.log('stringifieng successfull')
     ws?.send(msg)
+    setRinging(true)
   }
 
   const handleMenuClose = () => {

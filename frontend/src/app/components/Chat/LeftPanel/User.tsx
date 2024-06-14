@@ -35,7 +35,7 @@ const User = ({
   const formattedDate = moment(time).format("DD.MM.YYYY, hh:mm");
   const displayTime =
     moment().diff(moment(time), "days") <= 2 ? timeFromNow : formattedDate;
-  console.log("Otheruser:", otherUser);
+  // console.log("Otheruser:", otherUser);
   return (
     <Box
       key={name}
