@@ -57,15 +57,7 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
           console.log('setting incomingcall')
         } else {
           setImTheCaller(true);
-          ws?.send(
-            JSON.stringify({
-              type: 'videocall-accepted',
-              callerId: myCallId,
-              recipients: myCallId,
-              msgId: uuidv4(),
-              authorAvatar: session?.user.image
-            })
-          )
+   
         }
         setDialogs('incomingCall', true)
       }
@@ -75,17 +67,25 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
         if (myCallId !== callerId) {
           setOtherCallId(callerId)
           console.log('setting incomingcall')
+          setInCall(true)
         }
         setDialogs('incomingCall', true)
-        setInCall(true)
+        setRinging(false)
       }
       if (eventType === 'videocall-rejected') {
         console.log('rejected call:', JSON.parse(event.data))
         setDialogs('incomingCall', false)
         setRinging(false)
-        setOtherCallId('')
+        // setOtherCallId('')
         setOtherAuthorName('')
         setInCall(false)
+        setImTheCaller(false)
+        ; ((window as any).streamA as MediaStream)?.getTracks().forEach((track) => {
+          track.stop()
+        })
+        ; ((window as any).streamB as MediaStream)?.getTracks().forEach((track) => {
+          track.stop()
+        })
       }
       if (eventType === 'error') {
         console.log('error:', JSON.parse(event.data))

@@ -6,8 +6,8 @@ import Peer from 'peerjs'
 import { Call, CallEnd, Flip, Fullscreen, FullscreenExit, Mic, RingVolume, VolumeOff, VolumeUp } from '@mui/icons-material'
 import VideoFrame from './VideoFrame'
 import { useWebSocket } from 'next-ws/client'
-
-
+import { v4 as uuidv4 } from 'uuid'
+import { useSession } from 'next-auth/react'
 
 const IncomingCall: React.FC = () => {
   const [peerInstance, setPeerInstance] = useState<Peer | null>(null);
@@ -28,6 +28,8 @@ const IncomingCall: React.FC = () => {
   const callingVideoRef = useRef<HTMLVideoElement>(null)
   const myCallId = useStore((state) => state.myCallId)
   const inCall = useStore((state) => state.inCall)
+  const setInCall = useStore((state) => state.setInCall)
+  const { data: session } = useSession()
   const ws = useWebSocket()
   const handleClose = () => {
     setOpen('incomingCall', false)
@@ -71,8 +73,8 @@ const IncomingCall: React.FC = () => {
 
       if (typeof window !== 'undefined' && incomingCall) {
         peer = new Peer(myCallId, {
-          host: (process.env.NEXT_PUBLIC_PEERJS_URL_DOCKER || 'localhost').split(':')[1].replace('//', ''),
-          port: parseInt((process.env.NEXT_PUBLIC_PEERJS_URL_DOCKER || 'y:z:9000').split(':')[2]),
+          host: (process.env.NEXT_PUBLIC_PEERJS_URL_DOCKER || 'http://localhost:9000').split(':')[1].replace('//', ''),
+          port: parseInt((process.env.NEXT_PUBLIC_PEERJS_URL_DOCKER || 'http://localhost:9000').split(':')[2]),
           path: '/'
         })
 
@@ -99,19 +101,21 @@ const IncomingCall: React.FC = () => {
         ; ((window as any).streamA as MediaStream)?.getTracks().forEach((track) => {
           track.stop()
         })
+        ; ((window as any).streamB as MediaStream)?.getTracks().forEach((track) => {
+          track.stop()
+        })
 
       }
       return () => {
         if (peer) {
           peer.destroy();
         }
-
         ; ((window as any).streamA as MediaStream)?.getTracks().forEach((track) => {
           track.stop()
         })
-
-
-
+        ; ((window as any).streamB as MediaStream)?.getTracks().forEach((track) => {
+          track.stop()
+        })
       };
 
     }
@@ -119,6 +123,8 @@ const IncomingCall: React.FC = () => {
 
   const isMobile = useMediaQuery('(max-width: 600px)')
 
+  // const audioContext = new AudioContext();
+  // const gainNode = audioContext.createGain();
   return (
     <Dialog PaperProps={{
       sx: {
@@ -132,7 +138,7 @@ const IncomingCall: React.FC = () => {
           </Avatar>
         </motion.div>
         <Typography sx={{ fontWeight: 500, fontSize: '1.2rem' }}>
-          {inCall 
+          {inCall
             ? `in call with ${otherAuthorName}`
             : imTheCaller
               ? `calling ${otherAuthorName}`
@@ -142,9 +148,9 @@ const IncomingCall: React.FC = () => {
       <IconButton onClick={() => setRinging(!ringing)} sx={{ position: 'absolute', top: '1rem', right: '5rem' }}>
         {ringing ? <VolumeOff /> : <RingVolume />}
       </IconButton>
-      <IconButton onClick={() => setFlip(!flip)} sx={{ position: 'absolute', top: '1rem', right: '3rem' }}>
+      {/* <IconButton onClick={() => setFlip(!flip)} sx={{ position: 'absolute', top: '1rem', right: '3rem' }}>
         <Flip />
-      </IconButton>
+      </IconButton> */}
       <IconButton onClick={() => setFullScreen(!fullScreen)} sx={{ position: 'absolute', top: '1rem', right: '1rem' }}>
         {fullScreen ? <FullscreenExit /> : <Fullscreen />}
       </IconButton>
@@ -162,7 +168,7 @@ const IncomingCall: React.FC = () => {
               <VideoFrame callingVideoRef={myVideoRef} name={displayName} muted />
             </Grid>
             <Grid item xs={12} md={6} >
-              <VideoFrame callingVideoRef={callingVideoRef} name={otherAuthorName} />
+              {inCall && <VideoFrame callingVideoRef={callingVideoRef} name={otherAuthorName} />}
             </Grid>
           </Grid>
         </Paper>
@@ -170,8 +176,19 @@ const IncomingCall: React.FC = () => {
       <DialogActions>
         <Stack direction='column' spacing={2} width={'100%'} pl={2} pr={2}>
           <Stack direction='row' spacing={5} alignItems={'center'}>
-          <Stack direction='row' spacing={0} alignItems={'center'}flexGrow={1}>    
-              <IconButton>
+            <Stack direction='row' spacing={0} alignItems={'center'} flexGrow={1}>
+              <IconButton onClick={()=>{
+                console.log('ownVolume', ownVolume)
+                if (ownVolume === 0) {
+                  setOwnVolume(1) 
+                  handleOwnVolumeChange(1)
+                  // gainNode.gain.value = 1
+                } else { 
+                  setOwnVolume(0.01)
+                  handleOwnVolumeChange(0.01)
+                  // gainNode.gain.value = 0.01
+                }
+              }}>
                 <Mic />
               </IconButton>
               <Slider
@@ -184,65 +201,106 @@ const IncomingCall: React.FC = () => {
                   setOwnVolume(v)
                 }}
               />
-            
+
             </Stack>
 
-          <Stack direction='row' spacing={0} alignItems={'center'}flexGrow={1} pr={2}>
-              <IconButton>
+            <Stack direction='row' spacing={0} alignItems={'center'} flexGrow={1} pr={2}>
+              <IconButton onClick={()=>{
+                console.log('otherVideoVolume', otherVideoVolume)
+                if (otherVideoVolume === 0) {
+                  setOtherVideoVolume(1) 
+                  handleOtherVideoVolumeChange(1)
+                  if (callingVideoRef.current?.volume) {
+                    callingVideoRef.current!.volume = 1
+                  }
+                } else { 
+                  setOtherVideoVolume(0.01)
+                  handleOtherVideoVolumeChange(0.01)
+                  if (callingVideoRef.current?.volume) {
+                    callingVideoRef.current.volume = 0.01
+                  }
+                }
+              }}>
                 <VolumeUp />
               </IconButton>
               <Slider
                 min={0}
                 max={1}
                 step={0.01}
-                value={otherVideoVolume || 1} 
+                value={otherVideoVolume || 1}
                 onChange={(_e, v) => {
                   handleOtherVideoVolumeChange(v)
                   setOtherVideoVolume(v)
                 }}
               />
-          </Stack>
+            </Stack>
           </Stack>
 
-          <Stack direction='row' spacing={2} alignItems={'center'} justifyContent={'flex-end'} flexGrow={1}>
-          <Button
-            startIcon={<CallEnd />}
-            variant='contained'
-            color='error'
-            onClick={() => {
-              setRinging(false)
-              setOpen('incomingCall', false)
-              const msg = JSON.stringify({
-                type: 'videocall-rejected',
-                callerId: myCallId,
-              })
-              ws?.send(msg)
-            }}
-          >
-            {imTheCaller || inCall ? 'Hang up' : 'Reject'}
-          </Button>
-          {!imTheCaller && !inCall && <Button
-            startIcon={<Call />}
-            color='primary'
-            variant='contained'
-            onClick={() => {
-              setRinging(false)
-              navigator.mediaDevices
-                .getUserMedia({ video: true, audio: true })
-                .then((stream) => {
-                  const call = peerInstance?.call(otherCallId, stream);
-                  if (call) {
-                    call.on("stream", (userVideoStream) => {
-                      if (callingVideoRef.current) {
-                        callingVideoRef.current.srcObject = userVideoStream;
-                      }
-                    });
-                  }
-                });
-            }}
-          >
-            Accept
-          </Button>}
+          <Stack direction='row' spacing={2} alignItems={'center'} justifyContent={imTheCaller || inCall ? 'center' : 'flex-end'} flexGrow={1}>
+            <Button
+              startIcon={<CallEnd />}
+              variant='contained'
+              color='error'
+              onClick={() => {
+                setRinging(false)
+                setOpen('incomingCall', false)
+                const msg = JSON.stringify({
+                  type: 'videocall-rejected',
+                  callerId: myCallId,
+                })
+                ws?.send(msg)
+                ; ((window as any).streamA as MediaStream)?.getTracks().forEach((track) => {
+                  track.stop()
+                })
+              }}
+            >
+              {imTheCaller || inCall ? 'Hang up' : 'Reject'}
+            </Button>
+            {!imTheCaller && !inCall && <Button
+              startIcon={<Call />}
+              color='primary'
+              variant='contained'
+              onClick={() => {
+                setRinging(false)
+                setInCall(true)
+                navigator.mediaDevices
+                  .getUserMedia({ video: true, audio: true })
+                  .then((stream) => {
+                    const call = peerInstance?.call(otherCallId, stream);
+                    if (call) {
+                      call.answer(stream);
+                      call.on("stream", (userVideoStream) => {
+
+                        if (callingVideoRef.current) {
+                          callingVideoRef.current.srcObject = userVideoStream;
+                        }
+                      });
+                    }
+                    //  // Create a source from the stream
+                    // const source = audioContext.createMediaStreamSource(stream);
+
+                    // // Connect the source to the gain node
+                    // source.connect(gainNode);
+
+                    // // Connect the gain node to the destination (the speakers)
+                    // gainNode.connect(audioContext.destination);
+
+                    // // Now you can control the input volume with the gain node
+                    // gainNode.gain.value = 1; // Set to 100% volume
+                  });
+                ws?.send(
+                  JSON.stringify({
+                    type: 'videocall-accepted',
+                    callerId: myCallId,
+                    recipients: myCallId,
+                    msgId: uuidv4(),
+                    authorAvatar: session?.user.image
+                  })
+                )
+              }}
+            >
+              Accept
+            </Button>}
           </Stack>
         </Stack>
       </DialogActions>

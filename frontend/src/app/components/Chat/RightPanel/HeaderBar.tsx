@@ -46,7 +46,6 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
   }
 
   const handleCall = () => {
-    console.log('stringifieng msg')
     const msg = JSON.stringify({
       type: 'videocall',
       callerId: myCallId,
@@ -56,7 +55,6 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
       authorAvatar: session?.user.image,
       authorName: displayName
     })
-    console.log('stringifieng successfull')
     ws?.send(msg)
     setRinging(true)
   }
