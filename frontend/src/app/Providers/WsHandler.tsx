@@ -33,12 +33,14 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
   const setOtherAuthorName = useStore((state) => state.setOtherAuthorName)
   const setImTheCaller = useStore((state) => state.setImTheCaller);
   const setInCall = useStore((state) => state.setInCall);
-  const playDeclined = useAudio('/audio/call/declined.mp3').play
+  const inCall = useStore((state) => state.inCall)
+  // const playDeclined = useAudio('/audio/call/declined.mp3').play
+  const playEnd = useAudio('/audio/call/end.mp3').play
   const playMessageIncoming = useAudio('/audio/chat/messageIncoming.mp3').play
   const playMessageOutgoing = useAudio('/audio/chat/messageOutgoing.mp3').play
 
   const ws = useWebSocket()
-  
+
   const onMessage = useCallback(
     (event: MessageEvent<string>) => {
       const eventType = JSON.parse(event.data).type
@@ -61,7 +63,7 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
           console.log('setting incomingcall')
         } else {
           setImTheCaller(true);
-   
+
         }
         setDialogs('incomingCall', true)
       }
@@ -71,26 +73,33 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
         if (myCallId !== callerId) {
           setOtherCallId(callerId)
           console.log('setting incomingcall')
-          setInCall(true)
-        }
+          }
+        setInCall(true)
         setDialogs('incomingCall', true)
         setRinging(false)
       }
       if (eventType === 'videocall-rejected') {
-        console.log('rejected call:', JSON.parse(event.data))
+        console.log('rejected call:', JSON.parse(event.data), inCall)
+        playEnd()
+        // if (inCall) {
+        //   playEnd()
+        // } else {
+          // playDeclined()
+        // }
+        setOtherAuthorName('')
         setDialogs('incomingCall', false)
         setRinging(false)
         // setOtherCallId('')
-        setOtherAuthorName('')
+
         setInCall(false)
         setImTheCaller(false)
-        ; ((window as any).streamA as MediaStream)?.getTracks().forEach((track) => {
-          track.stop()
-        })
-        ; ((window as any).streamB as MediaStream)?.getTracks().forEach((track) => {
-          track.stop()
-        })
-        playDeclined()
+          ; ((window as any).streamA as MediaStream)?.getTracks().forEach((track) => {
+            track.stop()
+          })
+          ; ((window as any).streamB as MediaStream)?.getTracks().forEach((track) => {
+            track.stop()
+          })
+
       }
       if (eventType === 'error') {
         console.log('error:', JSON.parse(event.data))
@@ -153,6 +162,13 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
           })
           if (author !== displayName) {
             playMessageIncoming()
+            if (document.visibilityState === 'hidden') {
+              let notification = new Notification(`${author} ${chats.find((c) => c.id === chatId)?.name !== author ? `in ${chats.find((c) => c.id === chatId)?.name}` : ''}`, {
+                body: content,
+                icon: authorAvatar || '/favicon.ico'
+              })
+              notification.onclick = () =>  window.focus()              
+            }
           } else {
             playMessageOutgoing()
           }

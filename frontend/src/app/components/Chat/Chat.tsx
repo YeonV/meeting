@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, CssBaseline, Toolbar, useMediaQuery } from "@mui/material";
+import { Box, Button, CssBaseline, Toolbar, useMediaQuery } from "@mui/material";
 import { ChatAppBar, ChatContainer, ChatDrawer, ChatDrawerHeader, DrawerButton } from './ChatDrawer/ChatDrawer';
 import { useEffect, useRef, useState } from "react";
 import Userlist, { UserHeader } from "./LeftPanel/Userlist";
@@ -29,12 +29,23 @@ const Chat = () => {
     myCallId === "" && setMyCallId(generatedCallId);
   }, [myCallId, setMyCallId]);
 
+  useEffect(() => {
+    if (!("Notification" in window)) {
+      console.log("Browser does not support desktop notification");
+    } else {
+      Notification.requestPermission();
+    }
+  }, []);
+
+
+
 
   return (
     <>
       <IncomingCall />
       <Box sx={{ display: 'flex', paddingTop: '60px' }}>
         <CssBaseline />
+            
         <ChatAppBar drawerWidth={drawerWidth} open={open} sx={{ marginTop: isMobile ? '57px' : '74px', left: 0 }} position="fixed" >
           <Toolbar>
             <DrawerButton open={open} setOpen={setOpen} />
@@ -48,18 +59,18 @@ const Chat = () => {
           <Userlist onUserClick={() => isMobile && setOpen(false)} />
         </ChatDrawer>
         <ChatContainer open={open} drawerWidth={drawerWidth} boxHeight={boxHeight}>
-            <Box sx={{ zIndex: 22 }}>
-              <ChatDetail
-                open={chatDetail}
-                boxHeight={boxHeight.current?.offsetHeight || 0}
-              />
-            </Box>
-            <History
-              emojiOpen={emojiOpen}
-              messages={chat?.messages || []}
-              group={chat?.group}
+          <Box sx={{ zIndex: 22 }}>
+            <ChatDetail
+              open={chatDetail}
+              boxHeight={boxHeight.current?.offsetHeight || 0}
             />
-            <MessageBar emojiOpen={emojiOpen} setEmojiOpen={setEmojiOpen} />          
+          </Box>
+          <History
+            emojiOpen={emojiOpen}
+            messages={chat?.messages || []}
+            group={chat?.group}
+          />
+          <MessageBar emojiOpen={emojiOpen} setEmojiOpen={setEmojiOpen} />
         </ChatContainer>
       </Box>
     </>
