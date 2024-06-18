@@ -8,6 +8,7 @@ import useStore from '@/store/useStore'
 import useTranslation from '@/lib/utils'
 import { useSession } from 'next-auth/react'
 import { v4 as uuidv4 } from 'uuid'
+import useAudio from '../components/VideoChat/useAudio'
 
 const WsHandler = ({ children }: { children: React.ReactNode }) => {
   const { enqueueSnackbar } = useSnackbar()
@@ -32,9 +33,12 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
   const setOtherAuthorName = useStore((state) => state.setOtherAuthorName)
   const setImTheCaller = useStore((state) => state.setImTheCaller);
   const setInCall = useStore((state) => state.setInCall);
-  
-  const ws = useWebSocket()
+  const playDeclined = useAudio('/audio/call/declined.mp3').play
+  const playMessageIncoming = useAudio('/audio/chat/messageIncoming.mp3').play
+  const playMessageOutgoing = useAudio('/audio/chat/messageOutgoing.mp3').play
 
+  const ws = useWebSocket()
+  
   const onMessage = useCallback(
     (event: MessageEvent<string>) => {
       const eventType = JSON.parse(event.data).type
@@ -86,6 +90,7 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
         ; ((window as any).streamB as MediaStream)?.getTracks().forEach((track) => {
           track.stop()
         })
+        playDeclined()
       }
       if (eventType === 'error') {
         console.log('error:', JSON.parse(event.data))
@@ -146,6 +151,11 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
             reactions: [],
             recipients: recipients
           })
+          if (author !== displayName) {
+            playMessageIncoming()
+          } else {
+            playMessageOutgoing()
+          }
         }
       }
     },

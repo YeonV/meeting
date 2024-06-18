@@ -5,6 +5,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Fab,
   Grid,
   IconButton,
   MenuItem,
@@ -18,7 +19,7 @@ import {
 import VideoFrame from './VideoFrame'
 import useStore from '@/store/useStore'
 import Peer from 'peerjs'
-import { Call, CallEnd, Fullscreen, FullscreenExit, Mic, RingVolume, VolumeOff, VolumeUp } from '@mui/icons-material'
+import { Call, CallEnd, Fullscreen, FullscreenExit, Mic, MusicNote, MusicOff, RingVolume, VolumeOff, VolumeUp } from '@mui/icons-material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useWebSocket } from 'next-ws/client'
 import { v4 as uuidv4 } from 'uuid'
@@ -27,6 +28,7 @@ import { stopTracks } from './stopTracks'
 import { motion } from 'framer-motion'
 import { useVolumeControl } from './useVolumeControl'
 import VUMeter from './VUMeter'
+import useAudio from './useAudio'
 
 const graphModes = ['singleBar', 'multipleBars']
 
@@ -57,6 +59,7 @@ const IncomingCall: React.FC = () => {
   const inCall = useStore((state) => state.inCall)
   const setInCall = useStore((state) => state.setInCall)
   const dev = useStore((state) => state.dev)
+  const { play, stop } = useAudio(imTheCaller ? '/audio/call/outgoing.mp3' : '/audio/call/incoming.mp3', true, () => !ringing);
 
   const { data: session } = useSession()
   const ws = useWebSocket()
@@ -103,19 +106,12 @@ const IncomingCall: React.FC = () => {
   }
 
   useEffect(() => {
-    const audio = new Audio('/call.mp3')
-    let intervalId: any
-
     if (incomingCall && ringing) {
-      audio.play().catch(() => console.warn('Ringtone failed to play'))
-      intervalId = setInterval(() => audio.play().catch(() => console.warn('Ringtone failed to play')), 3000)
+      play();
+    } else {
+      stop();
     }
-
-    return () => {
-      clearInterval(intervalId)
-      audio.pause()
-    }
-  }, [incomingCall, ringing])
+  }, [incomingCall, ringing, play, stop, imTheCaller]);
 
   useEffect(() => {
     if (myCallId) {
@@ -133,7 +129,7 @@ const IncomingCall: React.FC = () => {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
           if (myVideoRef.current) {
             myVideoRef.current.srcObject = stream
-            ;(window as any).streamA = stream
+              ; (window as any).streamA = stream
           }
 
           peer.on('call', (call) => {
@@ -141,7 +137,7 @@ const IncomingCall: React.FC = () => {
             call.on('stream', (userVideoStream) => {
               if (callingVideoRef.current) {
                 callingVideoRef.current.srcObject = userVideoStream
-                ;(window as any).streamB = userVideoStream
+                  ; (window as any).streamB = userVideoStream
               }
             })
           })
@@ -170,13 +166,10 @@ const IncomingCall: React.FC = () => {
           {inCall ? `in call with ${otherAuthorName}` : imTheCaller ? `calling ${otherAuthorName}` : `${otherAuthorName} is calling`}
         </Typography>
       </DialogTitle>
-      <IconButton onClick={toggleRinging} sx={{ position: 'absolute', top: '1rem', right: '5rem' }}>
-        {ringing ? <VolumeOff /> : <RingVolume />}
-      </IconButton>
 
-      <IconButton onClick={toggleFullScreen} sx={{ position: 'absolute', top: '1rem', right: '1rem' }}>
+      {!isMobile && <IconButton onClick={toggleFullScreen} sx={{ position: 'absolute', top: '1rem', right: '1rem' }}>
         {fullScreen ? <FullscreenExit /> : <Fullscreen />}
-      </IconButton>
+      </IconButton>}
       <DialogContent sx={{ padding: isMobile ? 0 : '' }}>
         <Paper
           sx={{
@@ -192,7 +185,7 @@ const IncomingCall: React.FC = () => {
             </Grid>
             {inCall && (
               <Grid item xs={12} md={6}>
-                <VideoFrame callingVideoRef={callingVideoRef} name={otherAuthorName} />
+                <VideoFrame callingVideoRef={callingVideoRef} name={otherAuthorName} graphMode={graphMode} />
               </Grid>
             )}
           </Grid>
@@ -249,15 +242,35 @@ const IncomingCall: React.FC = () => {
             )}
           </Stack>
 
-          <Stack direction='row' spacing={2} alignItems={'center'} justifyContent={imTheCaller || inCall ? 'center' : 'flex-end'} flexGrow={1}>
-            <Button startIcon={<CallEnd />} variant='contained' color='error' onClick={rejectCall}>
-              {imTheCaller || inCall ? 'Hang up' : 'Reject'}
-            </Button>
-            {!imTheCaller && !inCall && (
-              <Button startIcon={<Call />} color='primary' variant='contained' onClick={acceptCall}>
-                Accept
-              </Button>
-            )}
+          <Stack direction='row' spacing={2} alignItems={'center'} justifyContent={imTheCaller || inCall || isMobile ? 'center' : 'flex-end'} flexGrow={1}>
+
+            {isMobile
+              ? <>
+                {!inCall && <Fab color={ringing ? 'error' : 'primary'} variant='extended' onClick={toggleRinging}>
+                  <RingVolume />
+                </Fab>}
+                <Fab color='error' variant='extended' onClick={rejectCall}>
+                  <CallEnd />
+                </Fab>
+                {!imTheCaller && !inCall && (
+                  <Fab color='primary' variant='extended' onClick={acceptCall}>
+                    <Call />
+                  </Fab>
+                )}
+              </>
+              : <>
+                {!inCall && <Button startIcon={ringing ? <MusicOff /> : <MusicNote />} variant='contained' color={ringing ? 'error' : 'primary'} onClick={toggleRinging}>
+                  {ringing ? 'Mute' : 'Unmute'}
+                </Button>}
+                <Button startIcon={<CallEnd />} variant='contained' color='error' onClick={rejectCall}>
+                  {imTheCaller || inCall ? 'Hang up' : 'Reject'}
+                </Button>
+                {!imTheCaller && !inCall && (
+                  <Button startIcon={<Call />} color='primary' variant='contained' onClick={acceptCall}>
+                    Accept
+                  </Button>
+                )}
+              </>}
           </Stack>
         </Stack>
       </DialogActions>

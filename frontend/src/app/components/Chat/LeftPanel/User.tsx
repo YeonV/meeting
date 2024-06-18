@@ -9,6 +9,7 @@ const User = ({
   id,
   lastMessage: { author, content, time },
   group,
+  onUserClick
 }: {
   name: string;
   id?: string;
@@ -18,6 +19,7 @@ const User = ({
     time?: number;
   };
   group?: boolean;
+  onUserClick?: (id: string) => void;
 }) => {
   const { data: session } = useSession();
 
@@ -42,6 +44,7 @@ const User = ({
       onClick={() => {
         setActiveChat(id ? id : "0");
         setOtherCallId(id ? id : "");
+        onUserClick && onUserClick(id ? id : "");
       }}
       sx={{
         display: "flex",
