@@ -53,7 +53,7 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
       }
       if (eventType === 'videocall') {
         console.log('incoming call:', JSON.parse(event.data))
-        const { callerId, authorAvatar, authorName } = JSON.parse(event.data)
+        const { callerId, authorAvatar, authorName, otherUser } = JSON.parse(event.data)
         if (myCallId !== callerId) {
           setOtherCallId(callerId)
           setOtherAuthorAvatar(authorAvatar)
@@ -63,15 +63,16 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
           console.log('setting incomingcall')
         } else {
           setImTheCaller(true);
-
+          setOtherAuthorName(otherUser)
         }
         setDialogs('incomingCall', true)
       }
       if (eventType === 'videocall-accepted') {
         console.log('accepted call:', JSON.parse(event.data))
-        const { callerId, authorAvatar } = JSON.parse(event.data)
+        const { callerId, authorName } = JSON.parse(event.data)
         if (myCallId !== callerId) {
           setOtherCallId(callerId)
+          setOtherAuthorName(authorName)
           console.log('setting incomingcall')
           }
         setInCall(true)

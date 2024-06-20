@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -19,7 +20,7 @@ import {
 import VideoFrame from './VideoFrame'
 import useStore from '@/store/useStore'
 import Peer from 'peerjs'
-import { Call, CallEnd, Fullscreen, FullscreenExit, Mic, MusicNote, MusicOff, RingVolume, VolumeOff, VolumeUp } from '@mui/icons-material'
+import { Call, CallEnd, FeaturedVideo, Fullscreen, FullscreenExit, Mic, MicOff, MusicNote, MusicOff, RingVolume, Settings, Splitscreen, VolumeOff, VolumeUp } from '@mui/icons-material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useWebSocket } from 'next-ws/client'
 import { v4 as uuidv4 } from 'uuid'
@@ -38,7 +39,12 @@ const IncomingCall: React.FC = () => {
   const [graphMode, setGraphMode] = useState<'singleBar' | 'multipleBars'>('singleBar')
   const [peerInstance, setPeerInstance] = useState<Peer | null>(null)
   const [fullScreen, setFullScreen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [splitScreen, setSplitScreen] = useState(false)
+
   const toggleFullScreen = () => setFullScreen(!fullScreen)
+  const toggleSettings = () => setSettingsOpen(!settingsOpen)
+  const toggleSplitScreen = () => setSplitScreen(!splitScreen)
 
   const myVideoRef = useRef<HTMLVideoElement>(null)
   const callingVideoRef = useRef<HTMLVideoElement>(null)
@@ -89,7 +95,8 @@ const IncomingCall: React.FC = () => {
         callerId: myCallId,
         recipients: myCallId,
         msgId: uuidv4(),
-        authorAvatar: session?.user.image
+        // authorAvatar: session?.user.image,
+        authorName: displayName
       })
     )
   }
@@ -150,7 +157,7 @@ const IncomingCall: React.FC = () => {
         stopTracks()
       }
     }
-  }, [incomingCall, myCallId, setPeerInstance])
+  }, [incomingCall, myCallId, splitScreen])
 
   const isMobile = useMediaQuery('(max-width: 600px)')
 
@@ -176,24 +183,30 @@ const IncomingCall: React.FC = () => {
             overflow: 'hidden',
             padding: 0,
             display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row'
+            flexDirection: isMobile ? 'column' : 'row',
+            height: '100%'
           }}
         >
-          <Grid container spacing={0} minWidth={640} minHeight={250}>
-            <Grid item xs={12} md={inCall || fullScreen ? 6 : 12}>
-              <VideoFrame callingVideoRef={myVideoRef} name={displayName} muted graphMode={graphMode} />
-            </Grid>
+          <Grid className='dragContainer' container spacing={0} minWidth={isMobile ? 320 : 640} minHeight={250} flexGrow={1} position={'relative'}>
             {inCall && (
-              <Grid item xs={12} md={6}>
-                <VideoFrame callingVideoRef={callingVideoRef} name={otherAuthorName} graphMode={graphMode} />
+
+              <Grid item xs={12} md={6} position={isMobile && !splitScreen ? 'absolute' : 'relative'} top={0} left={0} right={0} bottom={0} >
+                <Box height={'100%'}>
+                  <VideoFrame callingVideoRef={callingVideoRef} name={otherAuthorName} graphMode={graphMode} splitScreen={isMobile && splitScreen} />
+                </Box>
               </Grid>
             )}
+            <Grid item xs={12} md={inCall ? 6 : 12} position={isMobile && !splitScreen ? 'absolute' : 'relative'} top={0} left={0} right={0} bottom={15}>
+              <Box>
+                <VideoFrame callingVideoRef={myVideoRef} name={displayName} muted graphMode={graphMode} dnd={isMobile && !splitScreen} splitScreen={isMobile && splitScreen} me />
+              </Box>
+            </Grid>
           </Grid>
         </Paper>
       </DialogContent>
       <DialogActions>
         <Stack direction='column' spacing={2} width={'100%'} pl={2} pr={2}>
-          <Stack direction='row' spacing={5} alignItems={'center'}>
+          {(!isMobile || settingsOpen) && <Stack direction='row' spacing={5} alignItems={'center'}>
             <Stack direction='column' spacing={0} alignItems={'flex-start'} flexGrow={1}>
               <Stack direction='row' spacing={0} alignItems={'center'} flexGrow={1} width={fullScreen ? '46%' : '98%'}>
                 <IconButton onClick={toggleMyMute}>
@@ -240,23 +253,39 @@ const IncomingCall: React.FC = () => {
                 />
               </Stack>
             )}
-          </Stack>
+          </Stack>}
 
           <Stack direction='row' spacing={2} alignItems={'center'} justifyContent={imTheCaller || inCall || isMobile ? 'center' : 'flex-end'} flexGrow={1}>
 
             {isMobile
               ? <>
-                {!inCall && <Fab color={ringing ? 'error' : 'primary'} variant='extended' onClick={toggleRinging}>
-                  <RingVolume />
+                {<Fab disabled={inCall} size='small' color={'default'} onClick={toggleSplitScreen}>
+                  {splitScreen ? <Splitscreen /> : <FeaturedVideo />}
                 </Fab>}
-                <Fab color='error' variant='extended' onClick={rejectCall}>
-                  <CallEnd />
-                </Fab>
+            
+                {inCall && <Fab size='small' color={myVol as number < 0.02 ? 'error' : 'default'} onClick={toggleMyMute}>
+                  {myVol as number < 0.02 ? <MicOff /> : <Mic />}
+                </Fab>}
+
+
                 {!imTheCaller && !inCall && (
-                  <Fab color='primary' variant='extended' onClick={acceptCall}>
+                  <Fab color='primary' onClick={acceptCall}>
                     <Call />
                   </Fab>
                 )}
+                <Fab color='error' onClick={rejectCall}>
+                  <CallEnd />
+                </Fab>
+                {!inCall && <Fab size='small' color={ringing ? 'default' : 'error'} onClick={toggleRinging}>
+                  {ringing ? <RingVolume /> : <MusicNote />}
+                </Fab>}
+                {inCall && <Fab size='small' color={uVol as number < 0.02 ? 'error' : 'default'} onClick={toggleUMute}>
+                {uVol as number < 0.02 ? <VolumeOff /> : <VolumeUp />}
+                </Fab>}
+               
+                 {inCall && <Fab size='small' color={settingsOpen ? 'primary' : 'default'} onClick={toggleSettings}>
+                  <Settings />
+                </Fab>}
               </>
               : <>
                 {!inCall && <Button startIcon={ringing ? <MusicOff /> : <MusicNote />} variant='contained' color={ringing ? 'error' : 'primary'} onClick={toggleRinging}>

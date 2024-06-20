@@ -53,7 +53,8 @@ const ChatHeader = ({ open, drawerWidth }: { open?: boolean, drawerWidth: string
       chatId: chat?.id,
       msgId: uuidv4(),
       authorAvatar: session?.user.image,
-      authorName: displayName
+      authorName: displayName,
+      otherUser: otherUser
     })
     ws?.send(msg)
     setRinging(true)

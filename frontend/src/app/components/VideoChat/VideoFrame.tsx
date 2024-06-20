@@ -1,22 +1,29 @@
-import { Box, Chip, useMediaQuery } from '@mui/material'
-import { memo, ReactNode, RefObject, use, useEffect, useRef, useState } from 'react'
+import { memo, RefObject, useEffect, useRef, useState } from 'react'
+import { Box, useMediaQuery } from '@mui/material'
+import { Rnd } from 'react-rnd'
+import VideoPanSlider from './VideoPanSlider'
 import VUMeter from './VUMeter'
-import { Fullscreen } from '@mui/icons-material'
 
 interface VideoFrameProps {
   muted?: boolean
   callingVideoRef: RefObject<HTMLVideoElement>
   name: string
   graphMode?: 'singleBar' | 'multipleBars'
-  fullScreen?: boolean
+  fullScreen?: boolean,
+  me?: boolean
+  dnd?: boolean
+  splitScreen?: boolean
 }
 
-const VideoFrame: React.FC<VideoFrameProps> = ({ callingVideoRef, muted, name, graphMode, fullScreen }: VideoFrameProps) => {
+const VideoFrame: React.FC<VideoFrameProps> = ({ callingVideoRef, muted, name, graphMode, fullScreen, me, dnd, splitScreen }: VideoFrameProps) => {
   const audioStream = useRef<MediaStream | null>(null)
+  const [position, setPosition] = useState({ x: 240, y: 570 })
+  const [size, setSize] = useState<{ width: number | string; height: number | string }>({ width: 160, height: 121 })
+  const boxRef = useRef<HTMLDivElement>(null)
+  const [sliderValue, setSliderValue] = useState(5)
 
   useEffect(() => {
     audioStream.current = (callingVideoRef.current as any)?.captureStream()
-    console.log('audioStreams:', audioStream.current)
   }, [callingVideoRef])
 
   const [streamAvailable, setStreamAvailable] = useState(false)
@@ -24,12 +31,9 @@ const VideoFrame: React.FC<VideoFrameProps> = ({ callingVideoRef, muted, name, g
   useEffect(() => {
     const videoElement = callingVideoRef.current
     if (videoElement) {
-      const handleLoadedMetadata = () => {
-        setStreamAvailable(true)
-      }
+      const handleLoadedMetadata = () => setStreamAvailable(true)      
       videoElement.addEventListener('loadedmetadata', handleLoadedMetadata)
 
-      // Clean up event listener on unmount
       return () => {
         videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata)
       }
@@ -38,26 +42,84 @@ const VideoFrame: React.FC<VideoFrameProps> = ({ callingVideoRef, muted, name, g
 
   const isMobile = useMediaQuery('(max-width: 600px)')
 
-  return (
-    // <Rnd
-    //   size={size}
-    //   position={position}
-    //   onDragStop={(e, d) => setPosition({ x: d.x, y: d.y })}
-    //   onResizeStop={(e, direction, ref, delta, position) => {
-    //     setSize({
-    //       width: ref.offsetWidth,
-    //       height: ref.offsetHeight,
-    //       ...position,
-    //     });
-    //   }}
-    // >
-    <Box sx={{ border: `2px solid ${fullScreen ? '#0000' : 'gray'}`, borderRadius: '5px', position: 'relative', padding: 0, maxWidth: '100vw' }}>
-      <Chip label={name} sx={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)' }} />
-      <video playsInline ref={callingVideoRef} muted={!!muted} autoPlay style={{ width: '100%' }} />
+  useEffect(() => {
+    if (!dnd) {
+      return
+    }
+    const vw = window.innerWidth
+    const vh = window.innerHeight - 196
+
+    setSize({
+      width: me ? Math.max((vw * 0.3), 160) : 'unset',
+      height: me ? Math.max((vw * (me ? 0.3 : 1)), 160) * (3 / 4) : vh
+    });
+
+    setPosition({
+      x: me ? vw - ((size.width as number) + 10) : 0,
+      y: me ? vh - ((size.height as number) + 40) : 0
+    });
+
+    if (!boxRef.current) {
+      return
+    }
+    boxRef.current.scrollLeft = scrollX
+
+  }, []);
+
+  // useEffect(() => {
+  //   // Set up the video stream only once on mount and not on every re-render
+  //   const videoElement = callingVideoRef.current;
+  //   if (videoElement && !videoElement.srcObject) {
+  //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+  //       videoElement.srcObject = stream;
+  //     });
+  //   }
+  // }, [callingVideoRef]);
+
+
+  const renderVideo = () =>
+    <>
+      <Box ref={boxRef} className="drag-handle" sx={{
+        border: `${(me && dnd) ? '2' : '0'}px solid ${fullScreen ? '#0000' : 'gray'}`, borderRadius: '5px', position: (me && dnd) ? 'absolute' : 'relative', padding: 0, maxWidth: '100vw', height: '100%', overflowX: 'auto', overflowY: 'hidden', '&::-webkit-scrollbar': {
+          display: 'none'
+        },
+        '-ms-overflow-style': 'none',
+        'scrollbar-width': 'none'
+      }}>
+        {/* <Chip label={name} sx={{ position: me ? 'absolute' : 'sticky', top: 0, left: '50%', transform: 'translateX(-50%)' }} /> */}
+        <video className={(me ? 'meVideo' : 'uVideo') + ' dnd-' + JSON.stringify(!splitScreen)} playsInline ref={callingVideoRef} muted={!!muted} width={!splitScreen && !me && isMobile ? 'unset' : '100%'} autoPlay height={!splitScreen && !me  && isMobile ? '100%' : 'unset'} />
+      </Box>
       {<VUMeter stream={audioStream} streamAvailable={streamAvailable} graphMode={graphMode} />}
-    </Box>
-    // </Rnd>
-  )
+      {!me && !splitScreen && <VideoPanSlider sliderValue={sliderValue} setSliderValue={setSliderValue} boxRef={boxRef} />}
+    </>
+
+  if (dnd) {
+    return (
+      <Rnd
+        bounds={'.dragContainer'}
+        style={{ position: dnd ? 'absolute' : 'relative'}}
+        dragHandleClassName="drag-handle"
+        enableResizing={{ top: false, right: false, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false }}
+        size={size}
+        position={position}
+        onDragStop={(e, d) => {
+          console.log(d)
+          return setPosition({ x: d.x, y: d.y })
+        }}
+        onResizeStop={(e, direction, ref, delta, position) => {
+          setSize({
+            width: ref.offsetWidth,
+            height: ref.offsetHeight,
+            ...position,
+          });
+        }}
+      >
+        {renderVideo()}
+      </Rnd>
+    )
+  } else {
+    return renderVideo()
+  }
 }
 
 VideoFrame.displayName = 'VideoFrame'

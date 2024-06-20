@@ -30,6 +30,7 @@ function useAudio(url: string, loop = false, abortCondition = () => false) {
       audio.pause();
       audio.currentTime = 0;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { play, stop };
