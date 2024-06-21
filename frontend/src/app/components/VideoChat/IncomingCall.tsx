@@ -1,35 +1,14 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Fab,
-  Grid,
-  IconButton,
-  MenuItem,
-  Paper,
-  Select,
-  Slider,
-  Stack,
-  Typography,
-  useMediaQuery
-} from '@mui/material'
-import VideoFrame from './VideoFrame'
-import useStore from '@/store/useStore'
-import Peer from 'peerjs'
 import { Call, CallEnd, FeaturedVideo, Fullscreen, FullscreenExit, Mic, MicOff, MusicNote, MusicOff, RingVolume, Settings, Splitscreen, VolumeOff, VolumeUp } from '@mui/icons-material'
+import { Avatar,Box,Button,Dialog,DialogActions,DialogContent,DialogTitle,Fab,Grid,IconButton,MenuItem,Paper,Select,Slider,Stack,Typography,useMediaQuery } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useVolumeControl } from './useVolumeControl'
 import { useWebSocket } from 'next-ws/client'
 import { v4 as uuidv4 } from 'uuid'
-import { useSession } from 'next-auth/react'
-import { stopTracks } from './stopTracks'
 import { motion } from 'framer-motion'
-import { useVolumeControl } from './useVolumeControl'
-import VUMeter from './VUMeter'
+import VideoFrame from './VideoFrame'
+import useStore from '@/store/useStore'
 import useAudio from './useAudio'
+import Peer from 'peerjs'
 
 const graphModes = ['singleBar', 'multipleBars']
 
@@ -65,30 +44,44 @@ const IncomingCall: React.FC = () => {
   const inCall = useStore((state) => state.inCall)
   const setInCall = useStore((state) => state.setInCall)
   const dev = useStore((state) => state.dev)
-  const { play, stop } = useAudio(imTheCaller ? '/audio/call/outgoing.mp3' : '/audio/call/incoming.mp3', true, () => !ringing);
 
-  const { data: session } = useSession()
+  const { play, stop } = useAudio(imTheCaller ? '/audio/call/outgoing.mp3' : '/audio/call/incoming.mp3', true, () => !ringing);
   const ws = useWebSocket()
 
   const handleClose = () => {
     setOpen('incomingCall', false)
     setRinging(false)
   }
+  const stopAllTracks = () => {
+    peerInstance?.destroy()
+    if (myVideoRef.current) {
+      const mediaStream = myVideoRef.current.srcObject
+      if (mediaStream && mediaStream instanceof MediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop())
+      }
+    }
+    if (callingVideoRef.current) {
+      const mediaStream = callingVideoRef.current.srcObject
+      if (mediaStream && mediaStream instanceof MediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop())
+      }
+    }
+  }
 
   const acceptCall = () => {
     setRinging(false)
     setInCall(true)
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-      const call = peerInstance?.call(otherCallId, stream)
+    if (myVideoRef.current) {
+      const call = peerInstance?.call(otherCallId, myVideoRef.current.srcObject as MediaStream)
       if (call) {
-        call.answer(stream)
+        call.answer(myVideoRef.current.srcObject as MediaStream | undefined)
         call.on('stream', (userVideoStream) => {
           if (callingVideoRef.current) {
             callingVideoRef.current.srcObject = userVideoStream
           }
-        })
+        })    
       }
-    })
+    }
     ws?.send(
       JSON.stringify({
         type: 'videocall-accepted',
@@ -102,14 +95,12 @@ const IncomingCall: React.FC = () => {
   }
 
   const rejectCall = () => {
-    setRinging(false)
-    setOpen('incomingCall', false)
     const msg = JSON.stringify({
       type: 'videocall-rejected',
       callerId: myCallId
     })
     ws?.send(msg)
-    stopTracks()
+    stopAllTracks()
   }
 
   useEffect(() => {
@@ -136,7 +127,6 @@ const IncomingCall: React.FC = () => {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
           if (myVideoRef.current) {
             myVideoRef.current.srcObject = stream
-              ; (window as any).streamA = stream
           }
 
           peer.on('call', (call) => {
@@ -144,17 +134,17 @@ const IncomingCall: React.FC = () => {
             call.on('stream', (userVideoStream) => {
               if (callingVideoRef.current) {
                 callingVideoRef.current.srcObject = userVideoStream
-                  ; (window as any).streamB = userVideoStream
               }
             })
           })
         })
       } else {
-        stopTracks()
+        peerInstance?.destroy() // Destroy peer connection
+        stopAllTracks()
       }
       return () => {
         if (peer) peer.destroy()
-        stopTracks()
+        stopAllTracks()
       }
     }
   }, [incomingCall, myCallId, splitScreen])
@@ -189,7 +179,6 @@ const IncomingCall: React.FC = () => {
         >
           <Grid className='dragContainer' container spacing={0} minWidth={isMobile ? 320 : 640} minHeight={250} flexGrow={1} position={'relative'}>
             {inCall && (
-
               <Grid item xs={12} md={6} position={isMobile && !splitScreen ? 'absolute' : 'relative'} top={0} left={0} right={0} bottom={0} >
                 <Box height={'100%'}>
                   <VideoFrame callingVideoRef={callingVideoRef} name={otherAuthorName} graphMode={graphMode} splitScreen={isMobile && splitScreen} />

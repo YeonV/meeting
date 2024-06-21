@@ -2,13 +2,12 @@
 
 import { useCallback, useEffect } from 'react'
 import { useWebSocket } from 'next-ws/client'
-import { IWsMessage } from '@/types/chat/IMessage'
 import { useSnackbar } from 'notistack'
+import { useSession } from 'next-auth/react'
+import { IWsMessage } from '@/types/chat/IMessage'
+import { sound } from '../components/VideoChat/useAudio'
 import useStore from '@/store/useStore'
 import useTranslation from '@/lib/utils'
-import { useSession } from 'next-auth/react'
-import { v4 as uuidv4 } from 'uuid'
-import useAudio from '../components/VideoChat/useAudio'
 
 const WsHandler = ({ children }: { children: React.ReactNode }) => {
   const { enqueueSnackbar } = useSnackbar()
@@ -33,11 +32,9 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
   const setOtherAuthorName = useStore((state) => state.setOtherAuthorName)
   const setImTheCaller = useStore((state) => state.setImTheCaller);
   const setInCall = useStore((state) => state.setInCall);
-  const inCall = useStore((state) => state.inCall)
-  // const playDeclined = useAudio('/audio/call/declined.mp3').play
-  const playEnd = useAudio('/audio/call/end.mp3').play
-  const playMessageIncoming = useAudio('/audio/chat/messageIncoming.mp3').play
-  const playMessageOutgoing = useAudio('/audio/chat/messageOutgoing.mp3').play
+  const playEnd = () => sound('/audio/call/end.mp3')
+  const playMessageIncoming = () => sound('/audio/chat/messageIncoming.mp3')
+  const playMessageOutgoing = () => sound('/audio/chat/messageOutgoing.mp3')
 
   const ws = useWebSocket()
 
@@ -52,7 +49,6 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
         enqueueSnackbar(data.content, { variant: data.variant || 'info' })
       }
       if (eventType === 'videocall') {
-        console.log('incoming call:', JSON.parse(event.data))
         const { callerId, authorAvatar, authorName, otherUser } = JSON.parse(event.data)
         if (myCallId !== callerId) {
           setOtherCallId(callerId)
@@ -60,7 +56,6 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
           setOtherAuthorName(authorName)
           setImTheCaller(false);
           setRinging(true)
-          console.log('setting incomingcall')
         } else {
           setImTheCaller(true);
           setOtherAuthorName(otherUser)
@@ -68,39 +63,22 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
         setDialogs('incomingCall', true)
       }
       if (eventType === 'videocall-accepted') {
-        console.log('accepted call:', JSON.parse(event.data))
         const { callerId, authorName } = JSON.parse(event.data)
         if (myCallId !== callerId) {
           setOtherCallId(callerId)
           setOtherAuthorName(authorName)
-          console.log('setting incomingcall')
           }
-        setInCall(true)
         setDialogs('incomingCall', true)
+        setInCall(true)
         setRinging(false)
       }
       if (eventType === 'videocall-rejected') {
-        console.log('rejected call:', JSON.parse(event.data), inCall)
         playEnd()
-        // if (inCall) {
-        //   playEnd()
-        // } else {
-          // playDeclined()
-        // }
         setOtherAuthorName('')
         setDialogs('incomingCall', false)
-        setRinging(false)
-        // setOtherCallId('')
-
         setInCall(false)
+        setRinging(false)
         setImTheCaller(false)
-          ; ((window as any).streamA as MediaStream)?.getTracks().forEach((track) => {
-            track.stop()
-          })
-          ; ((window as any).streamB as MediaStream)?.getTracks().forEach((track) => {
-            track.stop()
-          })
-
       }
       if (eventType === 'error') {
         console.log('error:', JSON.parse(event.data))
@@ -117,7 +95,6 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
       }
       if (eventType === 'reactionRemove') {
         const { chatId, reaction, id } = JSON.parse(event.data)
-        console.log('reactionRemove:', chatId, id, reaction)
         if (reaction.author !== displayName) {
           removeReaction(chatId, id, reaction)
         } else {
@@ -125,13 +102,13 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
       }
       if (eventType === 'chat') {
         const { author, content, recipients, chatId, msgId, authorAvatar } = JSON.parse(event.data) as IWsMessage
-        console.table({
-          author,
-          authorAvatar,
-          content,
-          recipients: recipients?.join(','),
-          chatId
-        })
+        // console.table({
+        //   author,
+        //   authorAvatar,
+        //   content,
+        //   recipients: recipients?.join(','),
+        //   chatId
+        // })
 
         if (!recipients.includes(displayName) && !recipients.includes('General')) {
           return

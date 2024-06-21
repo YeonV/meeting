@@ -66,17 +66,6 @@ const VideoFrame: React.FC<VideoFrameProps> = ({ callingVideoRef, muted, name, g
 
   }, []);
 
-  // useEffect(() => {
-  //   // Set up the video stream only once on mount and not on every re-render
-  //   const videoElement = callingVideoRef.current;
-  //   if (videoElement && !videoElement.srcObject) {
-  //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-  //       videoElement.srcObject = stream;
-  //     });
-  //   }
-  // }, [callingVideoRef]);
-
-
   const renderVideo = () =>
     <>
       <Box ref={boxRef} className="drag-handle" sx={{
