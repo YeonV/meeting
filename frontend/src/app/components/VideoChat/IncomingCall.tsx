@@ -1,5 +1,5 @@
 import { Call, CallEnd, FeaturedVideo, Fullscreen, FullscreenExit, Mic, MicOff, MusicNote, MusicOff, RingVolume, Settings, Splitscreen, VolumeOff, VolumeUp } from '@mui/icons-material'
-import { Avatar,Box,Button,Dialog,DialogActions,DialogContent,DialogTitle,Fab,Grid,IconButton,MenuItem,Paper,Select,Slider,Stack,Typography,useMediaQuery } from '@mui/material'
+import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Fab, Grid, IconButton, MenuItem, Paper, Select, Slider, Stack, Typography, useMediaQuery } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useVolumeControl } from './useVolumeControl'
 import { useWebSocket } from 'next-ws/client'
@@ -79,7 +79,7 @@ const IncomingCall: React.FC = () => {
           if (callingVideoRef.current) {
             callingVideoRef.current.srcObject = userVideoStream
           }
-        })    
+        })
       }
     }
     ws?.send(
@@ -147,7 +147,7 @@ const IncomingCall: React.FC = () => {
         stopAllTracks()
       }
     }
-  }, [incomingCall, myCallId, splitScreen])
+  }, [incomingCall, myCallId])
 
   const isMobile = useMediaQuery('(max-width: 600px)')
 
@@ -245,50 +245,32 @@ const IncomingCall: React.FC = () => {
           </Stack>}
 
           <Stack direction='row' spacing={2} alignItems={'center'} justifyContent={imTheCaller || inCall || isMobile ? 'center' : 'flex-end'} flexGrow={1}>
-
-            {isMobile
-              ? <>
-                {<Fab disabled={inCall} size='small' color={'default'} onClick={toggleSplitScreen}>
-                  {splitScreen ? <Splitscreen /> : <FeaturedVideo />}
-                </Fab>}
-            
-                {inCall && <Fab size='small' color={myVol as number < 0.02 ? 'error' : 'default'} onClick={toggleMyMute}>
-                  {myVol as number < 0.02 ? <MicOff /> : <Mic />}
-                </Fab>}
+            {<Fab disabled={inCall} size='small' color={'default'} onClick={toggleSplitScreen}>
+              {splitScreen ? <Splitscreen /> : <FeaturedVideo />}
+            </Fab>}
+            {inCall && <Fab size='small' color={myVol as number < 0.02 ? 'error' : 'default'} onClick={toggleMyMute}>
+              {myVol as number < 0.02 ? <MicOff /> : <Mic />}
+            </Fab>}
 
 
-                {!imTheCaller && !inCall && (
-                  <Fab color='primary' onClick={acceptCall}>
-                    <Call />
-                  </Fab>
-                )}
-                <Fab color='error' onClick={rejectCall}>
-                  <CallEnd />
-                </Fab>
-                {!inCall && <Fab size='small' color={ringing ? 'default' : 'error'} onClick={toggleRinging}>
-                  {ringing ? <RingVolume /> : <MusicNote />}
-                </Fab>}
-                {inCall && <Fab size='small' color={uVol as number < 0.02 ? 'error' : 'default'} onClick={toggleUMute}>
-                {uVol as number < 0.02 ? <VolumeOff /> : <VolumeUp />}
-                </Fab>}
-               
-                 {inCall && <Fab size='small' color={settingsOpen ? 'primary' : 'default'} onClick={toggleSettings}>
-                  <Settings />
-                </Fab>}
-              </>
-              : <>
-                {!inCall && <Button startIcon={ringing ? <MusicOff /> : <MusicNote />} variant='contained' color={ringing ? 'error' : 'primary'} onClick={toggleRinging}>
-                  {ringing ? 'Mute' : 'Unmute'}
-                </Button>}
-                <Button startIcon={<CallEnd />} variant='contained' color='error' onClick={rejectCall}>
-                  {imTheCaller || inCall ? 'Hang up' : 'Reject'}
-                </Button>
-                {!imTheCaller && !inCall && (
-                  <Button startIcon={<Call />} color='primary' variant='contained' onClick={acceptCall}>
-                    Accept
-                  </Button>
-                )}
-              </>}
+            {!imTheCaller && !inCall && (
+              <Fab color='primary' onClick={acceptCall}>
+                <Call />
+              </Fab>
+            )}
+            <Fab color='error' onClick={rejectCall}>
+              <CallEnd />
+            </Fab>
+            {!inCall && <Fab size='small' color={ringing ? 'default' : 'error'} onClick={toggleRinging}>
+              {ringing ? <RingVolume /> : <MusicNote />}
+            </Fab>}
+            {inCall && <Fab size='small' color={uVol as number < 0.02 ? 'error' : 'default'} onClick={toggleUMute}>
+              {uVol as number < 0.02 ? <VolumeOff /> : <VolumeUp />}
+            </Fab>}
+
+            {inCall && <Fab size='small' color={settingsOpen ? 'primary' : 'default'} onClick={toggleSettings}>
+              <Settings />
+            </Fab>}
           </Stack>
         </Stack>
       </DialogActions>

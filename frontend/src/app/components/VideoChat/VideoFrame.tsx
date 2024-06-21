@@ -76,7 +76,7 @@ const VideoFrame: React.FC<VideoFrameProps> = ({ callingVideoRef, muted, name, g
         'scrollbar-width': 'none'
       }}>
         {/* <Chip label={name} sx={{ position: me ? 'absolute' : 'sticky', top: 0, left: '50%', transform: 'translateX(-50%)' }} /> */}
-        <video className={(me ? 'meVideo' : 'uVideo') + ' dnd-' + JSON.stringify(!splitScreen)} playsInline ref={callingVideoRef} muted={!!muted} width={!splitScreen && !me && isMobile ? 'unset' : '100%'} autoPlay height={!splitScreen && !me  && isMobile ? '100%' : 'unset'} />
+        <video className={(me ? 'meVideo' : 'uVideo')} playsInline ref={callingVideoRef} muted={!!muted} width={!splitScreen && !me && isMobile ? 'unset' : '100%'} autoPlay height={!splitScreen && !me  && isMobile ? '100%' : 'unset'} />
       </Box>
       {<VUMeter stream={audioStream} streamAvailable={streamAvailable} graphMode={graphMode} />}
       {!me && !splitScreen && <VideoPanSlider sliderValue={sliderValue} setSliderValue={setSliderValue} boxRef={boxRef} />}
