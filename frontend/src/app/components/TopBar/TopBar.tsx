@@ -2,7 +2,7 @@
 
 import { useState, MouseEvent } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
-import { Avatar, Divider, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, useTheme } from '@mui/material'
+import { Avatar, Divider, ListItemIcon, ListItemText, Stack, Tab, Tabs, Typography, useMediaQuery, useTheme } from '@mui/material'
 import {
   AdminPanelSettings,
   Brightness4,
@@ -33,7 +33,7 @@ import { useSnackbar } from 'notistack'
 import LocaleSelector from './LocalSelector'
 import useTranslation from '@/lib/utils'
 
-const TopBarBase = () => {
+export const TopBarContent = () => {
   const { data: session } = useSession()
   const theme = useTheme()
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
@@ -53,6 +53,7 @@ const TopBarBase = () => {
   const language = useStore((state) => state.language)
   const { t } = useTranslation(language)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const isMobile = useMediaQuery('(max-width: 600px)')
 
   const handleMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -62,165 +63,175 @@ const TopBarBase = () => {
     setAnchorEl(null)
   }
   useHotkeys('ctrl+alt+y', () => setDev(true))
+  return (
+    <>
+    <Stack direction='row' spacing={2} alignItems={'center'}>
+    {session && session.user ? (
+      <Tabs
+        value={currentTab}
+        onChange={(event: React.SyntheticEvent, newValue: number) => {
+          setCurrentTab(newValue)
+        }}
+      >
+        <Tab
+          iconPosition={'start'}
+          icon={<Image src={darkMode ? '/icon.png' : '/icon-with-bg.png'} alt='logo' width={40} height={40} />}
+          value={0}
+          label=''
+          sx={{ p: isMobile ? 0 : '', minWidth: '60px'}}
+        />
+        <Tab sx={{ p: isMobile ? 0 : '', minWidth: '60px'}} iconPosition={'start'} icon={<CalendarToday />} value={1} label={isMobile ? '' : t('Calendar')} />
+        <Tab sx={{ p: isMobile ? 0 : '', minWidth: '60px'}} iconPosition={'start'} icon={<List />} value={2} label={isMobile ? '' : t('Meetings')} />
+        <Tab sx={{ p: isMobile ? 0 : '', minWidth: '60px'}} iconPosition={'start'} icon={<Chat />} value={3} label={isMobile ? '' : t('Chat')} />
+        {(me.role?.type === 'privileged' || me.role?.type === 'administrator') && (
+          <Tab sx={{ p: isMobile ? 0 : '', minWidth: '60px'}} iconPosition={'start'} icon={<AdminPanelSettings />} value={4} label={isMobile ? '' : t('Admin')} />
+        )}
+      </Tabs>
+    ) : (
+      <>
+        <Image src={darkMode ? '/icon.png' : '/icon-with-bg.png'} alt='logo' width={40} height={40} style={{ marginRight: '1rem' }} />
+        <Typography variant='h6'>AppStack</Typography>
+      </>
+    )}
+  </Stack>
+  
+  <Stack direction='row' spacing={2} alignItems={'center'}>
+    {dev && (
+      <IconButton color='inherit' onClick={() => setDev(false)}>
+        <DeveloperBoard />
+      </IconButton>
+    )}
+  
+    <LocaleSelector />
+    {session && session.user ? (
+      <>
+        <IconButton
+          size='large'
+          aria-label='account of current user'
+          aria-controls='menu-appbar'
+          aria-haspopup='true'
+          onClick={handleMenu}
+          color='inherit'
+        >
+          {session.user.image ? <Avatar src={session.user.image} sx={{ width: 30, height: 30 }} /> : <AccountCircle />}
+        </IconButton>
+        <Menu
+          id='menu-appbar'
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleClose}>
+            {session.user.image ? (
+              <ListItemIcon>
+                <Avatar src={session.user.image} sx={{ mr: 2, width: 80, height: 80 }} />
+              </ListItemIcon>
+            ) : (
+              <ListItemIcon>
+                <AccountCircle sx={{ fontSize: 80, mr: 2 }} />
+              </ListItemIcon>
+            )}
+            <Stack direction='column'>
+              <Stack direction='row'>
+                <Typography variant='h6'>{displayName}</Typography>
+  
+                <IconButton
+                  size='small'
+                  onClick={() => {
+                    setDisplayName('')
+                  }}
+                  sx={{ color: theme.palette.text.disabled, fontSize: 12, ml: 1 }}
+                >
+                  <Edit sx={{ fontSize: 20 }} />
+                </IconButton>
+              </Stack>
+              <Typography variant='caption' color={'InactiveCaptionText'}>
+                {session.user.name}
+              </Typography>
+              {(me.role?.type === 'privileged' || me.role?.type === 'administrator') && (
+                <Typography
+                  color={'InactiveCaptionText'}
+                  sx={{
+                    // color: 'primary.main',
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.1em'
+                  }}
+                >
+                  {/** capitalize: */}
+                  {me.role?.type.toLocaleUpperCase()}
+                </Typography>
+              )}
+            </Stack>
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={() => setDisplayName('')}>
+            <ListItemIcon>
+              <Visibility />
+            </ListItemIcon>
+            <ListItemText>{t('Clear DisplayName')}</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={() => enqueueSnackbar('Testing snackbar notifications', { variant: 'info' })}>
+            <ListItemIcon>
+              <MessageRounded />
+            </ListItemIcon>
+            <ListItemText>{t('Test Snackbar')}</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={() => setDarkMode(!darkMode)}>
+            <ListItemIcon>{theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}</ListItemIcon>
+            <ListItemText>{t('Toggle DarkMode')}</ListItemText>
+          </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={() => {
+              setMeetings([])
+              setOtherMeetings([])
+              setMe({} as IMe)
+              signOut()
+            }}
+          >
+            <ListItemIcon>
+              <Logout />
+            </ListItemIcon>
+            <ListItemText>Logout</ListItemText>
+          </MenuItem>
+        </Menu>
+      </>
+    ) : (
+      <>
+        <IconButton onClick={() => setDarkMode(!darkMode)} color='inherit'>
+          {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+        </IconButton>
+        <IconButton color='inherit' onClick={() => enqueueSnackbar('Testing snackbar notifications', { variant: 'info' })}>
+          <MessageRounded />
+        </IconButton>
+        <IconButton color='inherit' onClick={() => signIn()}>
+          <Login />
+        </IconButton>
+      </>
+    )}
+  </Stack>
+  </>
+  )
+}
 
+const TopBarBase = () => {
+ 
+
+  
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position='fixed' color='inherit'>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Stack direction='row' spacing={2} alignItems={'center'}>
-            {session && session.user ? (
-              <Tabs
-                value={currentTab}
-                onChange={(event: React.SyntheticEvent, newValue: number) => {
-                  setCurrentTab(newValue)
-                }}
-              >
-                <Tab
-                  iconPosition='start'
-                  icon={<Image src={darkMode ? '/icon.png' : '/icon-with-bg.png'} alt='logo' width={40} height={40} />}
-                  value={0}
-                  label=''
-                />
-                <Tab iconPosition='start' icon={<CalendarToday />} value={1} label={t('Calendar')} />
-                <Tab iconPosition='start' icon={<List />} value={2} label={t('Meetings')} />
-                <Tab iconPosition='start' icon={<Chat />} value={3} label={t('Chat')} />
-                <Tab iconPosition='start' icon={<VideoChat />} value={3} label={t('Video-Chat')} />
-                {(me.role?.type === 'privileged' || me.role?.type === 'administrator') && (
-                  <Tab iconPosition='start' icon={<AdminPanelSettings />} value={4} label={t('Admin')} />
-                )}
-              </Tabs>
-            ) : (
-              <>
-                <Image src={darkMode ? '/icon.png' : '/icon-with-bg.png'} alt='logo' width={40} height={40} style={{ marginRight: '1rem' }} />
-                <Typography variant='h6'>AppStack</Typography>
-              </>
-            )}
-          </Stack>
-
-          <Stack direction='row' spacing={2} alignItems={'center'}>
-            {dev && (
-              <IconButton color='inherit' onClick={() => setDev(false)}>
-                <DeveloperBoard />
-              </IconButton>
-            )}
-
-            <LocaleSelector />
-            {session && session.user ? (
-              <>
-                <IconButton
-                  size='large'
-                  aria-label='account of current user'
-                  aria-controls='menu-appbar'
-                  aria-haspopup='true'
-                  onClick={handleMenu}
-                  color='inherit'
-                >
-                  {session.user.image ? <Avatar src={session.user.image} sx={{ width: 30, height: 30 }} /> : <AccountCircle />}
-                </IconButton>
-                <Menu
-                  id='menu-appbar'
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={handleClose}>
-                    {session.user.image ? (
-                      <ListItemIcon>
-                        <Avatar src={session.user.image} sx={{ mr: 2, width: 80, height: 80 }} />
-                      </ListItemIcon>
-                    ) : (
-                      <ListItemIcon>
-                        <AccountCircle sx={{ fontSize: 80, mr: 2 }} />
-                      </ListItemIcon>
-                    )}
-                    <Stack direction='column'>
-                      <Stack direction='row'>
-                        <Typography variant='h6'>{displayName}</Typography>
-
-                        <IconButton
-                          size='small'
-                          onClick={() => {
-                            setDisplayName('')
-                          }}
-                          sx={{ color: theme.palette.text.disabled, fontSize: 12, ml: 1 }}
-                        >
-                          <Edit sx={{ fontSize: 20 }} />
-                        </IconButton>
-                      </Stack>
-                      <Typography variant='caption' color={'InactiveCaptionText'}>
-                        {session.user.name}
-                      </Typography>
-                      {(me.role?.type === 'privileged' || me.role?.type === 'administrator') && (
-                        <Typography
-                          color={'InactiveCaptionText'}
-                          sx={{
-                            // color: 'primary.main',
-                            fontSize: '0.75rem',
-                            letterSpacing: '0.1em'
-                          }}
-                        >
-                          {/** capitalize: */}
-                          {me.role?.type.toLocaleUpperCase()}
-                        </Typography>
-                      )}
-                    </Stack>
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={() => setDisplayName('')}>
-                    <ListItemIcon>
-                      <Visibility />
-                    </ListItemIcon>
-                    <ListItemText>{t('Clear DisplayName')}</ListItemText>
-                  </MenuItem>
-                  <MenuItem onClick={() => enqueueSnackbar('Testing snackbar notifications', { variant: 'info' })}>
-                    <ListItemIcon>
-                      <MessageRounded />
-                    </ListItemIcon>
-                    <ListItemText>{t('Test Snackbar')}</ListItemText>
-                  </MenuItem>
-                  <MenuItem onClick={() => setDarkMode(!darkMode)}>
-                    <ListItemIcon>{theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}</ListItemIcon>
-                    <ListItemText>{t('Toggle DarkMode')}</ListItemText>
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem
-                    onClick={() => {
-                      setMeetings([])
-                      setOtherMeetings([])
-                      setMe({} as IMe)
-                      signOut()
-                    }}
-                  >
-                    <ListItemIcon>
-                      <Logout />
-                    </ListItemIcon>
-                    <ListItemText>Logout</ListItemText>
-                  </MenuItem>
-                </Menu>
-              </>
-            ) : (
-              <>
-                <IconButton onClick={() => setDarkMode(!darkMode)} color='inherit'>
-                  {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
-                </IconButton>
-                <IconButton color='inherit' onClick={() => enqueueSnackbar('Testing snackbar notifications', { variant: 'info' })}>
-                  <MessageRounded />
-                </IconButton>
-                <IconButton color='inherit' onClick={() => signIn()}>
-                  <Login />
-                </IconButton>
-              </>
-            )}
-          </Stack>
+      <AppBar position='fixed' color='inherit' sx={{zIndex: 1201}}>
+        <Toolbar sx={{ justifyContent: 'space-between', paddingLeft: 0.7, paddingRight: 0.7 }} >
+          <TopBarContent />
         </Toolbar>
       </AppBar>
     </Box>

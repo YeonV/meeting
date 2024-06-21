@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect } from 'react'
 import { useWebSocket } from 'next-ws/client'
-import { IWsMessage } from '@/types/chat/IMessage'
 import { useSnackbar } from 'notistack'
+import { useSession } from 'next-auth/react'
+import { IWsMessage } from '@/types/chat/IMessage'
+import { sound } from '../components/VideoChat/useAudio'
 import useStore from '@/store/useStore'
 import useTranslation from '@/lib/utils'
-import { useSession } from 'next-auth/react'
-import { v4 as uuidv4 } from 'uuid'
 
 const WsHandler = ({ children }: { children: React.ReactNode }) => {
   const { enqueueSnackbar } = useSnackbar()
@@ -32,7 +32,10 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
   const setOtherAuthorName = useStore((state) => state.setOtherAuthorName)
   const setImTheCaller = useStore((state) => state.setImTheCaller);
   const setInCall = useStore((state) => state.setInCall);
-  
+  const playEnd = () => sound('/audio/call/end.mp3')
+  const playMessageIncoming = () => sound('/audio/chat/messageIncoming.mp3')
+  const playMessageOutgoing = () => sound('/audio/chat/messageOutgoing.mp3')
+
   const ws = useWebSocket()
 
   const onMessage = useCallback(
@@ -46,46 +49,36 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
         enqueueSnackbar(data.content, { variant: data.variant || 'info' })
       }
       if (eventType === 'videocall') {
-        console.log('incoming call:', JSON.parse(event.data))
-        const { callerId, authorAvatar, authorName } = JSON.parse(event.data)
+        const { callerId, authorAvatar, authorName, otherUser } = JSON.parse(event.data)
         if (myCallId !== callerId) {
           setOtherCallId(callerId)
           setOtherAuthorAvatar(authorAvatar)
           setOtherAuthorName(authorName)
           setImTheCaller(false);
           setRinging(true)
-          console.log('setting incomingcall')
         } else {
           setImTheCaller(true);
-   
+          setOtherAuthorName(otherUser)
         }
         setDialogs('incomingCall', true)
       }
       if (eventType === 'videocall-accepted') {
-        console.log('accepted call:', JSON.parse(event.data))
-        const { callerId, authorAvatar } = JSON.parse(event.data)
+        const { callerId, authorName } = JSON.parse(event.data)
         if (myCallId !== callerId) {
           setOtherCallId(callerId)
-          console.log('setting incomingcall')
-          setInCall(true)
-        }
+          setOtherAuthorName(authorName)
+          }
         setDialogs('incomingCall', true)
+        setInCall(true)
         setRinging(false)
       }
       if (eventType === 'videocall-rejected') {
-        console.log('rejected call:', JSON.parse(event.data))
-        setDialogs('incomingCall', false)
-        setRinging(false)
-        // setOtherCallId('')
+        playEnd()
         setOtherAuthorName('')
+        setDialogs('incomingCall', false)
         setInCall(false)
+        setRinging(false)
         setImTheCaller(false)
-        ; ((window as any).streamA as MediaStream)?.getTracks().forEach((track) => {
-          track.stop()
-        })
-        ; ((window as any).streamB as MediaStream)?.getTracks().forEach((track) => {
-          track.stop()
-        })
       }
       if (eventType === 'error') {
         console.log('error:', JSON.parse(event.data))
@@ -102,7 +95,6 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
       }
       if (eventType === 'reactionRemove') {
         const { chatId, reaction, id } = JSON.parse(event.data)
-        console.log('reactionRemove:', chatId, id, reaction)
         if (reaction.author !== displayName) {
           removeReaction(chatId, id, reaction)
         } else {
@@ -110,13 +102,13 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
       }
       if (eventType === 'chat') {
         const { author, content, recipients, chatId, msgId, authorAvatar } = JSON.parse(event.data) as IWsMessage
-        console.table({
-          author,
-          authorAvatar,
-          content,
-          recipients: recipients?.join(','),
-          chatId
-        })
+        // console.table({
+        //   author,
+        //   authorAvatar,
+        //   content,
+        //   recipients: recipients?.join(','),
+        //   chatId
+        // })
 
         if (!recipients.includes(displayName) && !recipients.includes('General')) {
           return
@@ -146,6 +138,18 @@ const WsHandler = ({ children }: { children: React.ReactNode }) => {
             reactions: [],
             recipients: recipients
           })
+          if (author !== displayName) {
+            playMessageIncoming()
+            if (document.visibilityState === 'hidden') {
+              let notification = new Notification(`${author} ${chats.find((c) => c.id === chatId)?.name !== author ? `in ${chats.find((c) => c.id === chatId)?.name}` : ''}`, {
+                body: content,
+                icon: authorAvatar || '/favicon.ico'
+              })
+              notification.onclick = () =>  window.focus()              
+            }
+          } else {
+            playMessageOutgoing()
+          }
         }
       }
     },

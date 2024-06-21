@@ -297,6 +297,15 @@ const storeChat = (set: any, get: any) => ({
       false,
       'chat/setInCall'
     ),
+  userProfileOpen: false,
+  setUserProfileOpen: (open: boolean): void =>
+    set(
+      produce((state: IStore) => {
+        state.userProfileOpen = open
+      }),
+      false,
+      'chat/setUserProfileOpen'
+    ),
   // peerInstance: null as Peer | null,
   // setPeerInstance: (peer: Peer): void =>
   //   set(

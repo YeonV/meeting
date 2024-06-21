@@ -1,20 +1,57 @@
-import useStore from '@/store/useStore'
 import { ArrowBack, FilterList, MoreVert, Search } from '@mui/icons-material'
 import { AppBar, Avatar, Box, IconButton, Stack, TextField, Toolbar, Typography, useTheme } from '@mui/material'
-import User from './User'
-import useTranslation from '@/lib/utils'
 import { useSession } from 'next-auth/react'
-import zIndex from '@mui/material/styles/zIndex'
-import { useState } from 'react'
+import User from './User'
+import useStore from '@/store/useStore'
+import useTranslation from '@/lib/utils'
 import UserProfile from './UserProfile'
 
-const Userlist = ({ me }: { me: string }) => {
+export const UserHeader = () => {
+  const theme = useTheme()
+  const { data: session } = useSession()
+  const language = useStore((state) => state.language)
+  const { t } = useTranslation(language)
+  const userProfileOpen = useStore((state) => state.userProfileOpen)
+  const setUserProfileOpen = useStore((state) => state.setUserProfileOpen)
+  return (
+  <AppBar position='absolute' elevation={2} sx={{ zIndex: 10 }}>
+  <Toolbar>
+    <Stack direction='row' alignItems='center' justifyContent='space-between' flex={1}>
+      {userProfileOpen ? (
+        <>
+          <IconButton color='inherit' sx={{ mr: 2, ml: 0, p: 0 }} onClick={() => setUserProfileOpen(!userProfileOpen)}>
+            <ArrowBack />
+          </IconButton>
+          <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+            {t('Profile')}
+          </Typography>
+        </>
+      ) : (
+        <IconButton color='inherit' sx={{ mr: 2, ml: 0, p: 0 }} onClick={() => setUserProfileOpen(!userProfileOpen)}>
+          {session?.user.image ? (
+            <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText }} src={session?.user.image} />
+          ) : (
+            <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText }}>{session?.user?.name?.charAt(0)}</Avatar>
+          )}
+        </IconButton>
+      )}
+      <Stack direction='row' spacing={2} alignItems='center' justifyContent='space-between'>
+        <IconButton color='inherit'>
+          <MoreVert />
+        </IconButton>
+      </Stack>
+    </Stack>
+  </Toolbar>
+</AppBar>
+  )}
+const Userlist = ({onUserClick}:{
+  onUserClick: (id: string) => void
+}) => {
   const theme = useTheme()
   const language = useStore((state) => state.language)
   const chats = useStore((state) => state.chats)
   const { t } = useTranslation(language)
-  const { data: session } = useSession()
-  const [userProfileOpen, setUserProfileOpen] = useState(false)
+  const userProfileOpen = useStore((state) => state.userProfileOpen)
 
   return (
     <Box
@@ -22,45 +59,15 @@ const Userlist = ({ me }: { me: string }) => {
         display: 'flex',
         flexDirection: 'column',
         minHeight: 500,
-        width: 450,
-        border: '1px solid gray',
+        width: '100%',
         borderRight: '1px solid #5555',
         p: 0,
-        paddingTop: '64px',
+        paddingTop: '8px',
         position: 'relative',
         overflowX: 'hidden'
       }}
     >
-      <AppBar position='absolute' elevation={2} sx={{ zIndex: 10 }}>
-        <Toolbar>
-          <Stack direction='row' alignItems='center' justifyContent='space-between' flex={1}>
-            {userProfileOpen ? (
-              <>
-                <IconButton color='inherit' sx={{ mr: 2, ml: 0, p: 0 }} onClick={() => setUserProfileOpen(!userProfileOpen)}>
-                  <ArrowBack />
-                </IconButton>
-                <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-                  {t('Profile')}
-                </Typography>
-              </>
-            ) : (
-              <IconButton color='inherit' sx={{ mr: 2, ml: 0, p: 0 }} onClick={() => setUserProfileOpen(!userProfileOpen)}>
-                {session?.user.image ? (
-                  <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText }} src={session?.user.image} />
-                ) : (
-                  <Avatar sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.primary.contrastText }}>{me?.charAt(0)}</Avatar>
-                )}
-              </IconButton>
-            )}
-            <Stack direction='row' spacing={2} alignItems='center' justifyContent='space-between'>
-              <IconButton color='inherit'>
-                <MoreVert />
-              </IconButton>
-            </Stack>
-          </Stack>
-        </Toolbar>
-      </AppBar>
-      <Stack direction='row' alignItems='center' justifyContent='center' padding={'0.75rem 1rem'}>
+      <Stack direction='row' alignItems='center' justifyContent='center' padding={'0rem 0.7rem'}>
         <TextField
           placeholder={t('Search')}
           autoFocus
@@ -105,6 +112,7 @@ const Userlist = ({ me }: { me: string }) => {
                     }
               }
               group={chat.group}
+              onUserClick={onUserClick}
             />
           )
         })}

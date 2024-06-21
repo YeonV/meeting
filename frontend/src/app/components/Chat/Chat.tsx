@@ -1,16 +1,20 @@
 "use client";
 
+import { Box, Button, CssBaseline, Toolbar, useMediaQuery } from "@mui/material";
+import { ChatAppBar, ChatContainer, ChatDrawer, ChatDrawerHeader, DrawerButton } from './ChatDrawer/ChatDrawer';
 import { useEffect, useRef, useState } from "react";
-import { Box, Stack } from "@mui/material";
-import useStore from "@/store/useStore";
+import Userlist, { UserHeader } from "./LeftPanel/Userlist";
+import IncomingCall from '../VideoChat/IncomingCall';
 import MessageBar from "./RightPanel/MessageBar";
-import History from "./RightPanel/History/History";
-import Userlist from "./LeftPanel/Userlist";
-import HeaderBar from "./RightPanel/HeaderBar";
+import ChatHeader from "./RightPanel/ChatHeader";
 import ChatDetail from "./RightPanel/ChatDetail";
-import IncomingCall from "../VideoChat/IncomingCall";
+import useStore from "@/store/useStore";
+import History from "./RightPanel/History/History";
 
 const Chat = () => {
+  const isMobile = useMediaQuery('(max-width: 600px)')
+  const drawerWidth = isMobile ? '100%' : '450px'
+  const [open, setOpen] = useState(!isMobile);
   const [emojiOpen, setEmojiOpen] = useState(false);
   const chats = useStore((state) => state.chats);
   const activeChat = useStore((state) => state.activeChat);
@@ -20,40 +24,41 @@ const Chat = () => {
   const myCallId = useStore((state) => state.myCallId);
   const setMyCallId = useStore((state) => state.setMyCallId);
 
-
-
   useEffect(() => {
     const generatedCallId = Math.random().toString(36).substring(2);
-    // console.log("settingmycallid", generatedCallId);
     myCallId === "" && setMyCallId(generatedCallId);
   }, [myCallId, setMyCallId]);
-  
+
+  useEffect(() => {
+    if (!("Notification" in window)) {
+      console.log("Browser does not support desktop notification");
+    } else {
+      Notification.requestPermission();
+    }
+  }, []);
+
+
+
+
   return (
     <>
       <IncomingCall />
-      <Stack
-        direction={"row"}
-        spacing={0}
-        m={3}
-        flex={1}
-        sx={{ overflow: "hidden" }}
-      >
-        <Userlist me="YZ" />
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            flexGrow: 1,
-            minHeight: 500,
-            border: "1px solid gray",
-            borderLeft: 0,
-            p: 0,
-            paddingTop: "64px",
-            position: "relative",
-          }}
-          ref={boxHeight}
-        >
-          <HeaderBar />
+      <Box sx={{ display: 'flex', paddingTop: '60px' }}>
+        <CssBaseline />
+            
+        <ChatAppBar drawerWidth={drawerWidth} open={open} sx={{ marginTop: isMobile ? '57px' : '74px', left: 0 }} position="fixed" >
+          <Toolbar>
+            <DrawerButton open={open} setOpen={setOpen} />
+            <ChatHeader drawerWidth={drawerWidth} open={open} />
+          </Toolbar>
+        </ChatAppBar>
+        <ChatDrawer drawerWidth={drawerWidth} open={open}>
+          <ChatDrawerHeader>
+            <UserHeader />
+          </ChatDrawerHeader>
+          <Userlist onUserClick={() => isMobile && setOpen(false)} />
+        </ChatDrawer>
+        <ChatContainer open={open} drawerWidth={drawerWidth} boxHeight={boxHeight}>
           <Box sx={{ zIndex: 22 }}>
             <ChatDetail
               open={chatDetail}
@@ -66,10 +71,10 @@ const Chat = () => {
             group={chat?.group}
           />
           <MessageBar emojiOpen={emojiOpen} setEmojiOpen={setEmojiOpen} />
-        </Box>
-      </Stack>
+        </ChatContainer>
+      </Box>
     </>
   );
-};
+}
 
 export default Chat;

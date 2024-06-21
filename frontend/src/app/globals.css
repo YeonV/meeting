@@ -44,8 +44,8 @@ main {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  min-height: calc(100vh - 40px);
-  padding-top: 64px;
+  min-height: calc(100vh - 132px);
+  /* padding-top: 64px; */
 }
 
 .stickyHeader {
