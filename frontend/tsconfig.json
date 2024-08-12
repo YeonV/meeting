@@ -3,7 +3,13 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "webworker"
+    ],
+    "types": [
+      // Other types...
+      // This allows Serwist to type `window.serwist`.
+      "@serwist/next/typings"
     ],
     "allowJs": true,
     "target": "es6",
@@ -39,6 +45,7 @@
     ".nextdev/types/**/*.ts"
 , "middleware.old-ts", "src/app/layout.tsx", "src/app/page.tsx", "src/app/[locale]/page.tsx.test", "src/app/[locale]/layout.tsx.test"  ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "public/sw.js"
   ]
 }

@@ -19,6 +19,7 @@
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.17",
     "@mui/material-nextjs": "^5.15.11",
+    "@serwist/next": "^9.0.5",
     "cross-env": "^7.0.3",
     "crypto-js": "^4.2.0",
     "emoji-picker-react": "^4.9.2",
@@ -58,6 +59,7 @@
     "@types/ws": "^8.5.10",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
+    "serwist": "^9.0.5",
     "typescript": "^5"
   }
 }
