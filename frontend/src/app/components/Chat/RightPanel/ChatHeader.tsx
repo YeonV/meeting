@@ -1,8 +1,8 @@
 'use client'
 
 import useStore from '@/store/useStore'
-import { ClearAll, MoreVert, Search, VideoCall } from '@mui/icons-material'
-import { Typography, useTheme, Stack, Toolbar, AppBar, Avatar, IconButton, Icon, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material'
+import { ChevronLeft, ClearAll, MoreVert, Search, VideoCall } from '@mui/icons-material'
+import { Typography, useTheme, Stack, Toolbar, AppBar, Avatar, IconButton, Icon, Menu, MenuItem, ListItemIcon, ListItemText, Box } from '@mui/material'
 import moment from 'moment'
 import { useState } from 'react'
 import useTranslation from '@/lib/utils'
@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useSession } from 'next-auth/react'
 import { useWebSocket } from 'next-ws/client'
 
-const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
+const ChatHeader = ({ open, drawerWidth }: { open?: boolean, drawerWidth: string }) => {
   const theme = useTheme()
   const language = useStore((state) => state.language)
   const { t } = useTranslation(language)
@@ -53,7 +53,8 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
       chatId: chat?.id,
       msgId: uuidv4(),
       authorAvatar: session?.user.image,
-      authorName: displayName
+      authorName: displayName,
+      otherUser: otherUser
     })
     ws?.send(msg)
     setRinging(true)
@@ -63,10 +64,12 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
     setAnchorEl(null)
   }
   const setDialogs = useStore((state) => state.setDialogs)
+  const setOtherCallId = useStore((state) => state.setOtherCallId);
+  const setActiveChat = useStore((state) => state.setActiveChat);
 
   return (
-    <AppBar position='absolute' sx={{ borderRadius: rounded ? '12px 12px 0 0' : 0 }}>
-      <Toolbar sx={{ justifyContent: 'space-between' }}>
+    <Box position={'relative'} width={open ? `calc(98vw - ${drawerWidth})` : '100vw'}>
+  <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
         {lastSender && lastSender !== 'INTERNAL_SYSTEM_MESSAGE' ? (
           <>
             <Avatar
@@ -105,7 +108,7 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
             {t('Chat')}
           </Typography>
         )}
-        {!chat?.group && (
+        {!chat?.group && activeChat !== "0" &&(
           <IconButton color='inherit' onClick={handleCall}>
             <VideoCall />
           </IconButton>
@@ -141,9 +144,9 @@ const HeaderBar = ({ rounded }: { rounded?: boolean }) => {
           </MenuItem>
         </Menu>
         <DialogDeleteChat />
-      </Toolbar>
-    </AppBar>
+    </Stack>
+    </Box>
   )
 }
 
-export default HeaderBar
+export default ChatHeader

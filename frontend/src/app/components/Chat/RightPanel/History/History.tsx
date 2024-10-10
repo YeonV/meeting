@@ -5,7 +5,7 @@ import { IReaction } from '@/types/chat/IReaction'
 import { useSession } from 'next-auth/react'
 import { useWebSocket } from 'next-ws/client'
 import { useEffect, useRef, useState } from 'react'
-import { List, ListItem, Stack } from '@mui/material'
+import { List, ListItem, Stack, useMediaQuery } from '@mui/material'
 import PopupState, { bindPopover, bindHover } from 'material-ui-popup-state'
 import MessageWrapper from './Message/MessageWrapper'
 import MessageAvatar from './Message/MessageAvatar'
@@ -80,10 +80,11 @@ const History = ({ messages, emojiOpen, group }: { group?: boolean; messages: IM
 
   const sortedMessages = [...messages].sort((a, b) => new Date(a.time!).getTime() - new Date(b.time!).getTime())
 
+  const isMobile = useMediaQuery('(max-width: 600px)')
   let lastDate = null as string | null
 
   return (
-    <List sx={{ flexGrow: 1, maxHeight: `calc(100vh - ${emojiOpen ? 834 : 315}px)`, overflow: chatDetail ? 'hidden': 'auto', position: 'relative', p: 0, pb: 0, }}>
+    <List sx={{ flexGrow: 1, maxHeight: `calc(100vh - ${emojiOpen ? isMobile ? 662 : 693 : isMobile ? 212 : 235}px)`, overflow: chatDetail ? 'hidden': 'auto', position: 'relative', p: 0, pb: 0, }}>
       <HistoryBg />
       {sortedMessages.map(({ author, content, time, reactions, id, authorAvatar }, index) => {
         const isMe = author === displayName

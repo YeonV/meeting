@@ -1,11 +1,20 @@
 /* */
 // import createNextIntlPlugin from 'next-intl/plugin'
 // const withNextIntl = createNextIntlPlugin()
+import withSerwistInit from '@serwist/next'
 
 /** @type {import('next').NextConfig} */
 // import { verifyPatch } from 'next-ws/server/index.js'
 
 // verifyPatch()
+
+const withSerwist = withSerwistInit({
+  // Note: This is only an example. If you use Pages Router,
+  // use something else that works, such as "service-worker/index.ts".
+  swSrc: 'src/app/sw.ts',
+  swDest: 'public/sw.js'
+})
+
 const headers = [
   {
     // matching all routes for GET requests
@@ -81,5 +90,5 @@ const nextConfig = {
   distDir: process.env.NEXT_PUBLIC_STAGE === 'dev' ? '.nextdev' : '.next'
 }
 
-export default nextConfig
+export default withSerwist(nextConfig)
 // export default withNextIntl(nextConfig)

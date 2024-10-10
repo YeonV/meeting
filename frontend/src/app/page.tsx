@@ -15,7 +15,7 @@ import Content from './components/Content/Content'
 
 export const dynamic = 'force-dynamic'
 
-export default function Home(a: any) {
+export default function Home() {
   return (
     <main className={styles.main}>
       <Content />
