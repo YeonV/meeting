@@ -69,7 +69,7 @@ services:
 
   yzstrapiweb:
     container_name: yzstrapiweb
-    image: blade86/strapi-v4:latest-amd64
+    image: blade86/strapi-v5:latest-amd64
     restart: unless-stopped
     env_file: .env
     environment:
