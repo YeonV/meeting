@@ -69,6 +69,7 @@ module.exports = async () => {
             enabled: isEnabled(process.env.AUTH0_CLIENT_ID, process.env.AUTH0_CLIENT_SECRET),
             key: process.env.AUTH0_CLIENT_ID || '',
             secret: process.env.AUTH0_CLIENT_SECRET || '',
+            domain: process.env.AUTH0_DOMAIN || '',
         },
         cas: {
             enabled: isEnabled(process.env.CAS_CLIENT_ID, process.env.CAS_CLIENT_SECRET),

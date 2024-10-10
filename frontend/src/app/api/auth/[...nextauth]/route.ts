@@ -7,6 +7,7 @@ import SpotifyProvider from 'next-auth/providers/spotify'
 import BattleNetProvider from 'next-auth/providers/battlenet'
 import TwitterProvider from 'next-auth/providers/twitter'
 import DiscordProvider from 'next-auth/providers/discord'
+import Auth0Provider from 'next-auth/providers/auth0'
 
 interface Provider {
   provider: any;
@@ -21,7 +22,8 @@ const providers: Provider[] = [
   { provider: SpotifyProvider, id: 'SPOTIFY_CLIENT_ID', secret: 'SPOTIFY_CLIENT_SECRET' },
   { provider: BattleNetProvider, id: 'BATTLENET_CLIENT_ID', secret: 'BATTLENET_CLIENT_SECRET', options: { region: 'eu' } },
   { provider: TwitterProvider, id: 'TWITTER_ID', secret: 'TWITTER_SECRET', options: { version: '2.0' } },
-  { provider: DiscordProvider, id: 'DISCORD_CLIENT_ID', secret: 'DISCORD_CLIENT_SECRET' }
+  { provider: DiscordProvider, id: 'DISCORD_CLIENT_ID', secret: 'DISCORD_CLIENT_SECRET' },
+  { provider: Auth0Provider, id: 'AUTH0_CLIENT_ID', secret: 'AUTH0_CLIENT_SECRET', options: { domain: 'AUTH0_DOMAIN' } }
   // ...add more providers here
 ]
 
